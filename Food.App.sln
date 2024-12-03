@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35514.174 d17.12
+VisualStudioVersion = 17.12.35514.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Food.App.API", "Food.App.API\Food.App.API.csproj", "{02BBD2E5-5DD8-4568-9D16-B69123F0BE22}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Food.App.Core", "Food.App.Core\Food.App.Core.csproj", "{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Food.App.Repository", "Food.App.Repository\Food.App.Repository.csproj", "{E4A9F20D-A137-4271-B342-B63AAD93BF21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Food.App.Service", "Food.App.Service\Food.App.Service.csproj", "{635AE2AE-AEAF-4F4E-A96E-F3F76856E761}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4A9F20D-A137-4271-B342-B63AAD93BF21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4A9F20D-A137-4271-B342-B63AAD93BF21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4A9F20D-A137-4271-B342-B63AAD93BF21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4A9F20D-A137-4271-B342-B63AAD93BF21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{635AE2AE-AEAF-4F4E-A96E-F3F76856E761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{635AE2AE-AEAF-4F4E-A96E-F3F76856E761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{635AE2AE-AEAF-4F4E-A96E-F3F76856E761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{635AE2AE-AEAF-4F4E-A96E-F3F76856E761}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
