@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35514.174 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Food.App.API", "Food.App.API\Food.App.API.csproj", "{02BBD2E5-5DD8-4568-9D16-B69123F0BE22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Food.App.Core", "Food.App.Core\Food.App.Core.csproj", "{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{02BBD2E5-5DD8-4568-9D16-B69123F0BE22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02BBD2E5-5DD8-4568-9D16-B69123F0BE22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02BBD2E5-5DD8-4568-9D16-B69123F0BE22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B66AAD1-D9FE-4A14-8392-1FEC42F43B51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
