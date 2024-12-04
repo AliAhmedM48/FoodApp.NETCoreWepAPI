@@ -23,7 +23,7 @@ public class UserService : IUserService
         if (!isExist)
         {
             // TODO: Implement ResponseViewModel to handle error details.
-            Console.WriteLine($"User with id {id} is not found.");
+            throw new Exception($"User with id {id} is not found.");
         }
 
         _repository.Delete(new User { Id = id });
@@ -40,7 +40,14 @@ public class UserService : IUserService
     public UserDetailsViewModel GetUserDetailsById(int id)
     {
         var users = _repository.GetAll(u => u.Id == id);
-        var userViewModels = users.ProjectToForFirstOrDefault<UserDetailsViewModel>();
-        return userViewModels;
+        var userDetailsViewModel = users.ProjectToForFirstOrDefault<UserDetailsViewModel>();
+
+        if (userDetailsViewModel == null)
+        {
+            // TODO: Implement ResponseViewModel to handle error details.
+            throw new Exception($"User with id {id} is not found.");
+        }
+
+        return userDetailsViewModel;
     }
 }

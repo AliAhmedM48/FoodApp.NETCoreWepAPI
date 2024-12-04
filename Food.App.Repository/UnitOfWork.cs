@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(AppDbContext appDbContext)
     {
         _appDbContext = appDbContext;
+        _repositories = new Hashtable();
     }
     public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
     {
