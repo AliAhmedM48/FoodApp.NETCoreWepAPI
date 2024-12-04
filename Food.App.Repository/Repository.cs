@@ -67,7 +67,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
     public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> expression) => GetAll().Where(expression);
 
 
-    public async Task SaveChangesAsync() => await _appDbContext.SaveChangesAsync();
+    //public async Task SaveChangesAsync() => await _appDbContext.SaveChangesAsync();
 
 
 
