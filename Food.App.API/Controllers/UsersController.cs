@@ -1,5 +1,6 @@
 ﻿using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels;
+using Food.App.Core.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers;
@@ -15,24 +16,36 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<UserViewModel>> GetAllUsers()
+    public ActionResult<ResponseViewModel<List<UserViewModel>>> GetAllUsers()
     {
-        var userViewModels = _userService.GetAllUsers().ToList();
-        return Ok(userViewModels);
+        var responseViewModel = _userService.GetAllUsers();
+        if (!responseViewModel.IsSuccess)
+        {
+            return BadRequest(responseViewModel);
+        }
+        return Ok(responseViewModel);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<UserDetailsViewModel> GetAllUsers([FromRoute] int id)
+    public ActionResult<ResponseViewModel<UserDetailsViewModel>> GetUserDetails([FromRoute] int id)
     {
-        var userDetailsViewModel = _userService.GetUserDetailsById(id);
-        return Ok(userDetailsViewModel);
+        var responseViewModel = _userService.GetUserDetailsById(id);
+        if (!responseViewModel.IsSuccess)
+        {
+            return NotFound(responseViewModel);
+        }
+        return Ok(responseViewModel);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteUser([FromRoute] int id)
+    public async Task<ActionResult<ResponseViewModel<bool>>> DeleteUser([FromRoute] int id)
     {
-        await _userService.DeleteUserByIdAsync(id);
-        return Ok();
+        var responseViewModel = await _userService.DeleteUserByIdAsync(id);
+        if (!responseViewModel.IsSuccess)
+        {
+            return NotFound(responseViewModel);
+        }
+        return Ok(responseViewModel);
     }
 
 }

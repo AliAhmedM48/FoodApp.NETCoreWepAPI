@@ -2,7 +2,7 @@
 using Food.App.Core.Validation;
 
 namespace Food.App.Core.ViewModels.Response;
-public abstract class BaseResponseViewModel<T>
+public abstract class ResponseViewModel<T>
 {
     public bool IsSuccess { get; protected set; }
     public T? Data { get; protected set; } = default;

@@ -3,9 +3,9 @@ using Food.App.Core.Validation;
 
 namespace Food.App.Core.ViewModels.Response;
 
-public class FailureResponseViewModel<T> : BaseResponseViewModel<T>
+public class FailureResponseViewModel<T> : ResponseViewModel<T>
 {
-    public FailureResponseViewModel(ErrorCode errorCode, IEnumerable<ValidationError> validationErrors)
+    public FailureResponseViewModel(ErrorCode errorCode, IEnumerable<ValidationError>? validationErrors = default)
     {
         IsSuccess = false;
         ErrorCode = errorCode;

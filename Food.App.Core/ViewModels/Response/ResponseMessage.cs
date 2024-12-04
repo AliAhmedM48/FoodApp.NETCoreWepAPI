@@ -18,7 +18,7 @@ public static class ResponseMessage
         { SuccessCode.RecipeDetailsRetrieved, "Recipe details retrieved successfully." },
         { SuccessCode.RecipeCreated, "Recipe created successfully."  },
         { SuccessCode.RecipeUpdated, "Recipe updated successfully."  },
-        { SuccessCode.CategoryDeleted, "Recipe deleted successfully."  },
+        { SuccessCode.RecipeDeleted, "Recipe deleted successfully."  },
 
         // TAG
         { SuccessCode.TagsRetrieved, "Tags retrieved successfully." },
