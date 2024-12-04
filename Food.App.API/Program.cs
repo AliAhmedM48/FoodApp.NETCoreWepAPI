@@ -13,7 +13,7 @@ namespace Food.App.API
 {
     public class Program
     {
-        public static async void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -47,10 +47,15 @@ namespace Food.App.API
                 app.UseSwaggerUI();
                 #endregion
 
-                #region Update Database Based on Pending Migration
+                #region Update Database Based on Pending Migration & Data Seeding
                 var appDbContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
                 await appDbContext.Database.MigrateAsync();
+
+                await DataSeeder.SeedAdmins(appDbContext);
+                await DataSeeder.SeedUsers(appDbContext);
                 #endregion
+
+
             }
 
             MappingExtensions.Mapper = app.Services.GetRequiredService<IMapper>();
