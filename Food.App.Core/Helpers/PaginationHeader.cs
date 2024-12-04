@@ -1,4 +1,4 @@
-﻿namespace Food.App.API.Helpers;
+﻿namespace Food.App.Repository.Helpers;
 
 public class PaginationHeader
 {

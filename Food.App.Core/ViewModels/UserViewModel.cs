@@ -1,4 +1,4 @@
-﻿using Food.App.Core.Entities;
+﻿using Food.App.Core.ViewModels.Recipe;
 
 namespace Food.App.Core.ViewModels;
 public class UserViewModel
@@ -17,5 +17,5 @@ public class UserDetailsViewModel
     public string Email { get; set; }
     public string Country { get; set; }
     public string Phone { get; set; }
-    IEnumerable<Recipe> favoriteRecipes { get; set; }
+    IEnumerable<RecipeViewModel> FavoriteRecipes { get; set; }
 }

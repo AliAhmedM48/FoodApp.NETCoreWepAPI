@@ -28,7 +28,7 @@ public class GlobalErrorHandlerMiddleware
 
             var errorResponse = new
             {
-                message = "An unexpected error occurred. Please try again later.",
+                message = ex.Message,//"An unexpected error occurred. Please try again later.",
                 requestId = requestId.ToString()
             };
 
