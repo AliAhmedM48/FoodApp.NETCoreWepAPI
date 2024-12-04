@@ -9,6 +9,9 @@ public class AppDbContext : DbContext
     public DbSet<Person> Person { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Admin> Admins { get; set; }
+    public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
