@@ -11,6 +11,6 @@ public static class MappingExtensions
 
     public static IQueryable<destination> ProjectTo<destination>(this IQueryable<object> source) => Mapper.ProjectTo<destination>(source);
 
-    public static async Task<destination?> ProjectToForFirstOrDefaultAsync<destination>(this IQueryable<object> source) => await Mapper.ProjectTo<destination>(source).FirstOrDefaultAsync();
+    public static destination? ProjectToForFirstOrDefault<destination>(this IQueryable<object> source) => Mapper.ProjectTo<destination>(source).FirstOrDefault();
 
 }
