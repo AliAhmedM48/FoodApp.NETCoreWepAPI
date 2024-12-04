@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
 using FluentValidation;
 using Food.App.API.Config;
 using Food.App.API.Middlewares;
@@ -51,6 +52,8 @@ namespace Food.App.API
                 await appDbContext.Database.MigrateAsync();
                 #endregion
             }
+
+            MappingExtensions.Mapper = app.Services.GetRequiredService<IMapper>();
 
             app.UseHttpsRedirection();
 
