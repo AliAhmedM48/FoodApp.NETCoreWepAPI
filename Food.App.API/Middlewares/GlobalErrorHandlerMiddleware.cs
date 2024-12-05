@@ -1,14 +1,19 @@
-﻿namespace Food.App.API.Middlewares;
+﻿using System.Net;
+
+namespace Food.App.API.Middlewares;
 
 public class GlobalErrorHandlerMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IHostEnvironment _env;
+
     private readonly ILogger<GlobalErrorHandlerMiddleware> _logger;
 
-    public GlobalErrorHandlerMiddleware(RequestDelegate next, ILogger<GlobalErrorHandlerMiddleware> logger)
+    public GlobalErrorHandlerMiddleware(RequestDelegate next, ILogger<GlobalErrorHandlerMiddleware> logger,IHostEnvironment env)
     {
         _next = next;
         _logger = logger;
+        _env = env;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -26,13 +31,29 @@ public class GlobalErrorHandlerMiddleware
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var errorResponse = new
+           
+            if (_env.IsDevelopment())
             {
-                message = ex.Message,//"An unexpected error occurred. Please try again later.",
-                requestId = requestId.ToString()
-            };
+                var errorResponse = new
+                {
+                    message = ex.Message,
+                    stackTrace = ex.StackTrace,
+                    requestId = requestId.ToString()
+                };
+                await context.Response.WriteAsJsonAsync(errorResponse);
 
-            await context.Response.WriteAsJsonAsync(errorResponse);
+            }
+            else
+            {
+                var errorResponse = new
+                {
+                    message = "An unexpected error occurred. Please try again later.",
+                    requestId = requestId.ToString()
+                };
+                await context.Response.WriteAsJsonAsync(errorResponse);
+
+            }
+
         }
     }
 }
