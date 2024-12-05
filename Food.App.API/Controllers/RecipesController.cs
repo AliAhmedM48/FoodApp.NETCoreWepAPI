@@ -5,7 +5,7 @@ using Food.App.Core.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers;
-[Route("api/recipes")]
+[Route("api/recipes/")]
 [ApiController]
 public class RecipesController : ControllerBase
 {
@@ -19,6 +19,12 @@ public class RecipesController : ControllerBase
     public async Task<ActionResult<ResponseViewModel<PageList<RecipeViewModel>>>> GetAllRecipes([FromQuery] RecipeParams recipeParams)
     {
         var result = await _recipeService.GetAll(recipeParams);
+        return Ok(result);
+    }
+    [HttpGet("{id}")]
+    public ActionResult<ResponseViewModel<RecipeViewModel>> GetById(int id)
+    {
+        var result =  _recipeService.GetById(id);
         return Ok(result);
     }
 }

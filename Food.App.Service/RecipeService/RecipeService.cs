@@ -20,12 +20,32 @@ public class RecipeService : IRecipeService
         _repository = unitOfWork.GetRepository<Recipe>();
 
     }
+
+
+
+    public Task<ResponseViewModel<PageList<RecipeViewModel>>> Delete(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<ResponseViewModel<PageList<RecipeViewModel>>> GetAll(RecipeParams recipeParams)
     {
         var query = _repository.GetAll()
                                .ProjectTo<RecipeViewModel>();
         var paginatedResult = await PageList<RecipeViewModel>.CreateAsync(query, recipeParams.PageNumber, recipeParams.PageSize);
 
-        return new SuccessResponseViewModel<PageList<RecipeViewModel>>(SuccessCode.UsersRetrieved, paginatedResult);
+        return new SuccessResponseViewModel<PageList<RecipeViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
+    }
+
+    public ResponseViewModel<RecipeViewModel> GetById(int id)
+    {
+        var query = _repository.GetAll(u => u.Id == id);
+        var recipeViewModel = query.ProjectToForFirstOrDefault<RecipeViewModel>();
+        return new SuccessResponseViewModel<RecipeViewModel>(SuccessCode.RecipesRetrieved, recipeViewModel);
+
+    }
+    public Task<ResponseViewModel<PageList<RecipeViewModel>>> Update(int id)
+    {
+        throw new NotImplementedException();
     }
 }

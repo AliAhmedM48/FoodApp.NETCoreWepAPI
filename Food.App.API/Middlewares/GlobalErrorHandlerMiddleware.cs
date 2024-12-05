@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Food.App.API.Middlewares;
+﻿namespace Food.App.API.Middlewares;
 
 public class GlobalErrorHandlerMiddleware
 {
@@ -9,7 +7,7 @@ public class GlobalErrorHandlerMiddleware
 
     private readonly ILogger<GlobalErrorHandlerMiddleware> _logger;
 
-    public GlobalErrorHandlerMiddleware(RequestDelegate next, ILogger<GlobalErrorHandlerMiddleware> logger,IHostEnvironment env)
+    public GlobalErrorHandlerMiddleware(RequestDelegate next, ILogger<GlobalErrorHandlerMiddleware> logger, IHostEnvironment env)
     {
         _next = next;
         _logger = logger;
@@ -31,7 +29,7 @@ public class GlobalErrorHandlerMiddleware
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
-           
+
             if (_env.IsDevelopment())
             {
                 var errorResponse = new
