@@ -38,6 +38,8 @@ public static class ResponseMessage
 
     private static readonly Dictionary<ErrorCode, string> ErrorMessages = new()
     {
+         { ErrorCode.DataBaseError, "A database error occurred while processing the request. Please try again later or contact support if the issue persists." },
+
         { ErrorCode.ValidationError, "Validation failed: One or more fields contain invalid values. Please review the errors and try again." },
 
         // USER

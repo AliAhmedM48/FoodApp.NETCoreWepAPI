@@ -69,9 +69,11 @@ public class RecipeService : IRecipeService
             }).ToList(),
         };
         await _repository.AddAsync(receipe);
+
         var result = await _unitOfWork.SaveChangesAsync() > 0;
+
         return result ? new SuccessResponseViewModel<int>(SuccessCode.RecipeCreated, data: receipe.Id)
-                       : new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+                      : new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
 
     }
 
