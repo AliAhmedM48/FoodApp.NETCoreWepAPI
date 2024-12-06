@@ -8,6 +8,7 @@ using Food.App.Core.MappingProfiles;
 using Food.App.Core.ViewModels.Recipe;
 using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
+using Microsoft.EntityFrameworkCore;
 
 namespace Food.App.Service.RecipeService;
 public class RecipeService : IRecipeService
@@ -24,10 +25,6 @@ public class RecipeService : IRecipeService
 
 
 
-    public Task<ResponseViewModel<PageList<RecipeViewModel>>> Delete(int id)
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<ResponseViewModel<PageList<RecipeViewModel>>> GetAll(RecipeParams recipeParams)
     {
@@ -49,7 +46,7 @@ public class RecipeService : IRecipeService
         return new SuccessResponseViewModel<RecipeViewModel>(SuccessCode.RecipesRetrieved, recipeViewModel);
 
     }
-    public async Task<ResponseViewModel<int>> Create(UpdateRecipeViewModel model)
+    public async Task<ResponseViewModel<int>> Create(CreateRecipeViewModel model)
     {
         var isRecipeExist = await _repository.AnyAsync(x => x.Name == model.Name);
         if (isRecipeExist)
@@ -76,5 +73,66 @@ public class RecipeService : IRecipeService
                       : new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
 
     }
+    public async Task<ResponseViewModel<int>> Update(UpdateRecipeViewModel model)
+    {
 
+        var isReciptExist = await _repository.DoesEntityExistAsync(model.RecipeId);
+        if (isReciptExist)
+        {
+            var receipt = new Recipe
+            {
+                Id = model.RecipeId,
+                Name = model.Name,
+                Description = model.Description,
+                CategoryId = model.CategoryId
+            };
+
+            _repository.SaveInclude(receipt, x => x.Name, x => x.Description, x => x.CategoryId);
+            await _unitOfWork.SaveChangesAsync();
+            return new SuccessResponseViewModel<int>(SuccessCode.RecipeUpdated, data: model.RecipeId);
+
+        }
+        else
+        {
+            return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+        }
+    }
+    public async Task<ResponseViewModel<int>> Delete(int id)
+    {
+        var isRecipeExist = await _unitOfWork.GetRepository<Recipe>()
+                                             .AnyAsync(x => x.Id == id && !x.IsDeleted);
+        if (isRecipeExist)
+        {
+            var recipe = new Recipe
+            {
+                Id = id,
+                IsDeleted = true,
+            };
+
+            _unitOfWork.GetRepository<Recipe>()
+                                              .SaveInclude(recipe, x => x.IsDeleted);
+            var saveResult = await _unitOfWork.SaveChangesAsync() > 0;
+            var isRecipeHasTag = await _unitOfWork.GetRepository<RecipeTag>()
+                                                  .AnyAsync(x => x.RecipeId == id);
+            bool recipeTagsUpdated = false;
+            if (isRecipeHasTag)
+            {
+                recipeTagsUpdated = _unitOfWork.GetRepository<RecipeTag>()
+                           .GetAll()
+                           .Where(x => x.RecipeId == id)
+                           .ExecuteUpdate(s => s.SetProperty(b => b.IsDeleted, true)) > 0;
+
+            }
+            if (saveResult && isRecipeHasTag && recipeTagsUpdated || saveResult && !isRecipeHasTag)
+            {
+                return new SuccessResponseViewModel<int>(SuccessCode.RecipeDeleted);
+            }
+        }
+        if (!isRecipeExist)
+        {
+            return new FailureResponseViewModel<int>(ErrorCode.RecipeNotFound);
+
+        }
+        return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+    }
 }

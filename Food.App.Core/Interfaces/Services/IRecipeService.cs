@@ -8,8 +8,8 @@ public interface IRecipeService
 {
     Task<ResponseViewModel<PageList<RecipeViewModel>>> GetAll(RecipeParams recipeParams);
     ResponseViewModel<RecipeViewModel> GetById(int id);
-    Task<ResponseViewModel<int>> Create(UpdateRecipeViewModel model);
-    Task<ResponseViewModel<PageList<RecipeViewModel>>> Delete(int id);
-
+    Task<ResponseViewModel<int>> Create(CreateRecipeViewModel model);
+    Task<ResponseViewModel<int>> Update(UpdateRecipeViewModel model);
+    Task<ResponseViewModel<int>> Delete(int id);
 
 }

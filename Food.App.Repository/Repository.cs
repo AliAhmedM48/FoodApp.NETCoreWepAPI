@@ -124,8 +124,15 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
 
     public async Task<bool> DoesEntityExistAsync(int id) => await _dbSet.AnyAsync(e => e.Id == id);
 
-    public async Task<bool> AnyAsync(Expression<Func<TEntity,bool>> expression )
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression)
     {
-      return  await _dbSet.AnyAsync(expression);
+        return await _dbSet.AnyAsync(expression);
+    }
+
+    public void UpdateFullEntity(IEnumerable<TEntity> entities)
+    {
+        _dbSet.UpdateRange(entities);
+
+
     }
 }
