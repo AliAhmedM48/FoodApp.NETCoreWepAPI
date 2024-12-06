@@ -8,7 +8,8 @@ namespace Food.App.Core.MappingProfiles
     {
         public TagProfile()
         {
-            CreateMap<Tag,TagViewModel>();
+            CreateMap<Tag,TagViewModel>()
+                .ForMember(dst=>dst.TotalAssociatedRecipes , opt=>opt.MapFrom(src=>src.Tags.Count()));
         }
     }
 }
