@@ -1,0 +1,10 @@
+﻿using Food.App.Core.ViewModels.Response;
+using Food.App.Core.ViewModels.Tags;
+
+namespace Food.App.Core.Interfaces.Services
+{
+    public interface ITagService
+    {
+        ResponseViewModel<IEnumerable<TagViewModel>> GetAllTags();
+    }
+}
