@@ -17,6 +17,7 @@ public enum ErrorCode
     RecipeAlreadyExist =301,
     // TAG
     TagNotFound = 400,
+    TagAlreadyExist = 401,
 
     // CATEGORY
     CategoryNotFound = 500,

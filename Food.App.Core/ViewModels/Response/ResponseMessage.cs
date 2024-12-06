@@ -50,6 +50,7 @@ public static class ResponseMessage
 
         // TAG
         { ErrorCode.TagNotFound, "The specified tag could not be found." },
+        { ErrorCode.TagAlreadyExist, "The specified tag Already exist." },
 
         // CATEGORY
         { ErrorCode.CategoryNotFound, "The specified category could not be found." },

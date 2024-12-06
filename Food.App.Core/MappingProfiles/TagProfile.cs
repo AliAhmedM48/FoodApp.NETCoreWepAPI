@@ -10,6 +10,9 @@ namespace Food.App.Core.MappingProfiles
         {
             CreateMap<Tag,TagViewModel>()
                 .ForMember(dst=>dst.TotalAssociatedRecipes , opt=>opt.MapFrom(src=>src.Tags.Count()));
+
+            CreateMap<TagCreateViewModel, Tag>();
+
         }
     }
 }

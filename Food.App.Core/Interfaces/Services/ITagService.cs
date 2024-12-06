@@ -6,5 +6,6 @@ namespace Food.App.Core.Interfaces.Services
     public interface ITagService
     {
         ResponseViewModel<IEnumerable<TagViewModel>> GetAllTags();
+        Task<ResponseViewModel<int>> Create(TagCreateViewModel viewModel);
     }
 }

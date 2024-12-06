@@ -20,6 +20,30 @@ namespace Food.App.Service
             _tagRepository = unitOfWork.GetRepository<Tag>();
 
         }
+
+        public async Task<ResponseViewModel<int>> Create(TagCreateViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                return new FailureResponseViewModel<int>(ErrorCode.ValidationError);
+            }
+
+            var isExist = await _tagRepository.AnyAsync(e=>e.Name== viewModel.Name);
+            if (isExist) 
+            { 
+                return new FailureResponseViewModel<int>(ErrorCode.TagAlreadyExist);
+            }
+
+            var tag = viewModel.Map<Tag>();
+            await _tagRepository.AddAsync(tag);
+            var isSaved = await _unitOfWork.SaveChangesAsync();
+            if (isSaved == 0) {
+                return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+            }
+            return new SuccessResponseViewModel<int>(SuccessCode.TagCreated);
+
+        }
+
         public ResponseViewModel<IEnumerable<TagViewModel>> GetAllTags()
         {
             var tags = _tagRepository.GetAll();

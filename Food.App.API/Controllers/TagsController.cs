@@ -27,5 +27,16 @@ namespace Food.App.API.Controllers
             return NotFound(tagsViewModel);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> Create(TagCreateViewModel viewModel)
+        {
+            var tag = await _tagService.Create(viewModel);
+            if (tag.IsSuccess)
+            {
+                return Ok(tag);
+            }
+            return BadRequest(tag);
+        }
+
     }
 }
