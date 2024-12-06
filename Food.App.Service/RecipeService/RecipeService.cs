@@ -107,8 +107,8 @@ public class RecipeService : IRecipeService
                 IsDeleted = true,
             };
 
-            _unitOfWork.GetRepository<Recipe>()
-                                              .SaveInclude(recipe, x => x.IsDeleted);
+            _unitOfWork.GetRepository<Recipe>().SaveInclude(recipe, x => x.IsDeleted);
+
             var saveResult = await _unitOfWork.SaveChangesAsync() > 0;
             var isRecipeHasTag = await _unitOfWork.GetRepository<RecipeTag>()
                                                   .AnyAsync(x => x.RecipeId == id);
@@ -125,12 +125,18 @@ public class RecipeService : IRecipeService
             {
                 return new SuccessResponseViewModel<int>(SuccessCode.RecipeDeleted);
             }
+            else
+            {
+                return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+
+            }
         }
-        if (!isRecipeExist)
+        else
         {
             return new FailureResponseViewModel<int>(ErrorCode.RecipeNotFound);
 
         }
-        return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
     }
+
 }
+
