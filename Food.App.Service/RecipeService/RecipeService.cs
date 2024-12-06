@@ -6,6 +6,7 @@ using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.MappingProfiles;
 using Food.App.Core.ViewModels.Recipe;
+using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
 
 namespace Food.App.Service.RecipeService;
@@ -41,11 +42,37 @@ public class RecipeService : IRecipeService
     {
         var query = _repository.GetAll(u => u.Id == id);
         var recipeViewModel = query.ProjectToForFirstOrDefault<RecipeViewModel>();
+        if (recipeViewModel is null)
+        {
+            return new FailureResponseViewModel<RecipeViewModel>(ErrorCode.RecipeNotFound);
+        }
         return new SuccessResponseViewModel<RecipeViewModel>(SuccessCode.RecipesRetrieved, recipeViewModel);
 
     }
-    public Task<ResponseViewModel<PageList<RecipeViewModel>>> Update(int id)
+    public async Task<ResponseViewModel<int>> Create(UpdateRecipeViewModel model)
     {
-        throw new NotImplementedException();
+        var isRecipeExist = await _repository.AnyAsync(x => x.Name == model.Name);
+        if (isRecipeExist)
+        {
+            return new FailureResponseViewModel<int>(ErrorCode.RecipeAlreadyExist);
+        }
+        var receipe = new Recipe
+        {
+            Name = model.Name,
+            Description = model.Description,
+            ImagePath = model.ImagePath,
+            CreatedAt = DateTime.UtcNow,
+            CategoryId = model.CategoryId,
+            RecipeTags = model.TagIds.Select(x => new RecipeTag
+            {
+                TagId = x
+            }).ToList(),
+        };
+        await _repository.AddAsync(receipe);
+        var result = await _unitOfWork.SaveChangesAsync() > 0;
+        return result ? new SuccessResponseViewModel<int>(SuccessCode.RecipeCreated, data: receipe.Id)
+                       : new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+
     }
+
 }

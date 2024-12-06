@@ -45,6 +45,8 @@ public static class ResponseMessage
 
         // RECIPE
         { ErrorCode.RecipeNotFound, "The specified recipe could not be found." },
+        { ErrorCode.RecipeAlreadyExist, "Recipe Already Exist with the same name" },
+
 
         // TAG
         { ErrorCode.TagNotFound, "The specified tag could not be found." },

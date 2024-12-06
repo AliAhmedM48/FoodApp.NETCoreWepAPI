@@ -18,5 +18,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     void Undelete(TEntity entity);
     void HardDelete(TEntity entity);
     Task<bool> DoesEntityExistAsync(int id);
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression);
+
     //Task SaveChangesAsync();
 }
