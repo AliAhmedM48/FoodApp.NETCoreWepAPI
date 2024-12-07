@@ -16,7 +16,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
         _dbSet = _appDbContext.Set<TEntity>();
     }
 
-
     public async Task AddAsync(TEntity entity)
     {
         entity.CreatedAt = DateTime.Now;

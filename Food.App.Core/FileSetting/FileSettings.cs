@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 
-namespace Food.App.Core.FileSettings;
+namespace Food.App.Core.FileSetting;
 public class FileSettings
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
