@@ -8,6 +8,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     Task AddRangeAsync(IEnumerable<TEntity> entities);
     void SaveInclude(TEntity entity, params Expression<Func<TEntity, object>>[] propertyExpressions);
     void SaveIncludeRange(IEnumerable<TEntity> entities, params Expression<Func<TEntity, object>>[] propertyExpressions);
+    void UpdateFullEntity(IEnumerable<TEntity> entities);
     void SaveExclude(TEntity entity, params Expression<Func<TEntity, object>>[] propertyExpressions);
     IQueryable<TEntity> GetAll();
     IQueryable<TEntity> GetAllWithDeleted();
@@ -20,5 +21,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
 
     public IQueryable<TEntity> GetAllWithInclude(Func<IQueryable<TEntity>, IQueryable<TEntity>> Expr);
     Task<bool> DoesEntityExistAsync(int id);
+    Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression);
+
     //Task SaveChangesAsync();
 }

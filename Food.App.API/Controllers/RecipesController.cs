@@ -1,6 +1,8 @@
-﻿using Food.App.Core.Helpers;
+﻿using Food.App.Core.Enums;
+using Food.App.Core.Helpers;
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels.Recipe;
+using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +26,61 @@ public class RecipesController : ControllerBase
     [HttpGet("{id}")]
     public ActionResult<ResponseViewModel<RecipeViewModel>> GetById(int id)
     {
-        var result =  _recipeService.GetById(id);
+        var result = _recipeService.GetById(id);
         return Ok(result);
+    }
+    [HttpPost]
+    public async Task<ActionResult> Create(CreateRecipeViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+
+        }
+        var result = await _recipeService.Create(model);
+        if (result.IsSuccess)
+        {
+            return Ok(result);
+        }
+        if (result.ErrorCode != ErrorCode.DataBaseError)
+        {
+            return BadRequest(result);
+        }
+        return StatusCode((int)ErrorCode.DataBaseError, result.Message);
+
+    }
+    [HttpPut]
+    public async Task<ActionResult> Update(UpdateRecipeViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(model);
+        }
+        var result = await _recipeService.Update(model);
+        if (result.IsSuccess)
+        {
+            return Ok(result);
+        }
+        if (result.ErrorCode == ErrorCode.RecipeNotFound)
+        {
+            return NotFound(result);
+        }
+        return StatusCode((int)ErrorCode.DataBaseError, result.Message);
+    }
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Update(int id)
+    {
+        if (!ModelState.IsValid) { }
+        var result = await _recipeService.Delete(id);
+        if (result.IsSuccess)
+        {
+            return Ok(result);
+        }
+        if (result.ErrorCode == ErrorCode.RecipeNotFound)
+        {
+            return NotFound(result);
+        }
+        return StatusCode((int)ErrorCode.DataBaseError, result.Message);
+
     }
 }

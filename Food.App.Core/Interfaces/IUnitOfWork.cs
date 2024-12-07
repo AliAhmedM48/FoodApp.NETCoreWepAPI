@@ -4,5 +4,5 @@ namespace Food.App.Core.Interfaces;
 public interface IUnitOfWork
 {
     IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
-    Task SaveChangesAsync();
+    Task<int> SaveChangesAsync();
 }

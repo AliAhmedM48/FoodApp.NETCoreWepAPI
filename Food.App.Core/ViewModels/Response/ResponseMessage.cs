@@ -38,6 +38,8 @@ public static class ResponseMessage
 
     private static readonly Dictionary<ErrorCode, string> ErrorMessages = new()
     {
+         { ErrorCode.DataBaseError, "A database error occurred while processing the request. Please try again later or contact support if the issue persists." },
+
         { ErrorCode.ValidationError, "Validation failed: One or more fields contain invalid values. Please review the errors and try again." },
 
         // USER
@@ -45,9 +47,12 @@ public static class ResponseMessage
 
         // RECIPE
         { ErrorCode.RecipeNotFound, "The specified recipe could not be found." },
+        { ErrorCode.RecipeAlreadyExist, "Recipe Already Exist with the same name" },
+
 
         // TAG
         { ErrorCode.TagNotFound, "The specified tag could not be found." },
+        { ErrorCode.TagAlreadyExist, "The specified tag Already exist." },
 
         // CATEGORY
         { ErrorCode.CategoryNotFound, "The specified category could not be found." },
