@@ -123,4 +123,9 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
     }
 
     public async Task<bool> DoesEntityExistAsync(int id) => await _dbSet.AnyAsync(e => e.Id == id);
+
+    public IQueryable<TEntity> GetAllWithInclude(Func<IQueryable<TEntity>, IQueryable<TEntity>> Expr) 
+    {
+        return Expr(_dbSet);
+    } 
 }

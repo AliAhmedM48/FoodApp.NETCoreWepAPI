@@ -19,5 +19,6 @@ public enum ErrorCode
 
     // CATEGORY
     CategoryNotFound = 500,
+    CategoryWithSameNameFound = 600,
 
 }
