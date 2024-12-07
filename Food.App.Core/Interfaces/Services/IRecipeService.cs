@@ -10,6 +10,7 @@ public interface IRecipeService
     ResponseViewModel<RecipeViewModel> GetById(int id);
     Task<ResponseViewModel<int>> Create(CreateRecipeViewModel model);
     Task<ResponseViewModel<int>> Update(UpdateRecipeViewModel model);
+    Task<ResponseViewModel<int>> UpdateRecipeImage(UpdateReciptImageViewModel model);
     Task<ResponseViewModel<int>> Delete(int id);
 
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper.QueryableExtensions;
 using Food.App.Core.Entities;
 using Food.App.Core.Enums;
+using Food.App.Core.FileSettings;
 using Food.App.Core.Helpers;
 using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
@@ -15,12 +16,13 @@ public class RecipeService : IRecipeService
 {
     private readonly IRepository<Recipe> _repository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IImageService _imageService;
 
-    public RecipeService(IUnitOfWork unitOfWork)
+    public RecipeService(IUnitOfWork unitOfWork, IImageService imageService)
     {
         _unitOfWork = unitOfWork;
         _repository = unitOfWork.GetRepository<Recipe>();
-
+        _imageService = imageService;
     }
 
 
@@ -31,7 +33,10 @@ public class RecipeService : IRecipeService
         var query = _repository.GetAll()
                                .ProjectTo<RecipeViewModel>();
         var paginatedResult = await PageList<RecipeViewModel>.CreateAsync(query, recipeParams.PageNumber, recipeParams.PageSize);
-
+        foreach (var item in paginatedResult)
+        {
+            item.ImagePath = $"{FileSettings.ImagePath}{FileSettings.RecipeImageFolder} {item.ImagePath}";
+        }
         return new SuccessResponseViewModel<PageList<RecipeViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
     }
 
@@ -53,11 +58,12 @@ public class RecipeService : IRecipeService
         {
             return new FailureResponseViewModel<int>(ErrorCode.RecipeAlreadyExist);
         }
+        var getImagePath = await _imageService.UploadImage(model.ImageFile, FileSettings.RecipeImageFolder);
         var receipe = new Recipe
         {
             Name = model.Name,
             Description = model.Description,
-            ImagePath = model.ImagePath,
+            ImagePath = getImagePath,
             CreatedAt = DateTime.UtcNow,
             CategoryId = model.CategoryId,
             RecipeTags = model.TagIds.Select(x => new RecipeTag
@@ -94,6 +100,26 @@ public class RecipeService : IRecipeService
         {
             return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
         }
+    }
+    public async Task<ResponseViewModel<int>> UpdateRecipeImage(UpdateReciptImageViewModel model)
+    {
+        var isReciptExist = await _repository.DoesEntityExistAsync(model.Id);
+        if (isReciptExist)
+        {
+            var result = await _unitOfWork.GetRepository<Recipe>().GetByIdAsync(model.Id);
+            var getImagePath = await _imageService.UploadImage(model.ImageFile, FileSettings.RecipeImageFolder);
+            _imageService.DeleteOlderImage(result.ImagePath, FileSettings.RecipeImageFolder);
+            var receipt = new Recipe
+            {
+                Id = model.Id,
+                ImagePath = getImagePath,
+            };
+
+            _repository.SaveInclude(receipt, x => x.ImagePath);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        return new SuccessResponseViewModel<int>(SuccessCode.RecipeUpdated, data: model.Id);
+
     }
     public async Task<ResponseViewModel<int>> Delete(int id)
     {
