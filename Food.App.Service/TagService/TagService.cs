@@ -69,5 +69,23 @@ namespace Food.App.Service
             }
             return new SuccessResponseViewModel<bool>(SuccessCode.TagDeleted);
         }
+
+        public  async Task<ResponseViewModel<bool>> UpdateTag(TagUpdateViewModel viewModel)
+        {
+            
+            var isExist = await _tagRepository.AnyAsync(e => e.Id == viewModel.Id && !e.IsDeleted);
+            if (!isExist)
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.TagNotFound);
+            }
+            var tag = viewModel.Map<Tag>();
+            _tagRepository.SaveInclude(tag, t=>t.Name);
+            var isSaved = await _unitOfWork.SaveChangesAsync();
+            if (isSaved == 0)
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.DataBaseError);
+            }
+            return new SuccessResponseViewModel<bool>(SuccessCode.TagUpdated);
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace Food.App.Core.Interfaces.Services
         ResponseViewModel<IEnumerable<TagViewModel>> GetAllTags();
         Task<ResponseViewModel<int>> Create(TagCreateViewModel viewModel);
         Task<ResponseViewModel<bool>> DeleteTag(int tagID);
+        Task<ResponseViewModel<bool>> UpdateTag(TagUpdateViewModel viewModel);
 
     }
 }

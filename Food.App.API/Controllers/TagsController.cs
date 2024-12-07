@@ -47,5 +47,16 @@ namespace Food.App.API.Controllers
             }
             return BadRequest(isDeleted);
         }
+
+        [HttpPut]
+        public async Task<ActionResult> Update(TagUpdateViewModel viewModel)
+        {
+            var isUpdated = await _tagService.UpdateTag(viewModel);
+            if (isUpdated.IsSuccess)
+            {
+                return Ok(isUpdated);
+            }
+            return BadRequest(isUpdated);
+        }
     }
 }

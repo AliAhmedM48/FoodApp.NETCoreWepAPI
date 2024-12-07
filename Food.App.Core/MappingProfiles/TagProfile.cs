@@ -13,6 +13,8 @@ namespace Food.App.Core.MappingProfiles
 
             CreateMap<TagCreateViewModel, Tag>();
 
+            CreateMap<TagUpdateViewModel, Tag>();
+
         }
     }
 }
