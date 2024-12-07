@@ -135,4 +135,9 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
 
 
     }
+
+    public IQueryable<TEntity> GetAllWithInclude(Func<IQueryable<TEntity>, IQueryable<TEntity>> expression)
+    {
+        return expression(_dbSet);
+    }
 }
