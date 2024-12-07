@@ -51,5 +51,23 @@ namespace Food.App.Service
             var response = new SuccessResponseViewModel<IEnumerable<TagViewModel>>(SuccessCode.TagsRetrieved , tagsViewModel);
             return response;
         }
+
+        public async Task<ResponseViewModel<bool>> DeleteTag(int tagID)
+        {
+            var isExist = await _tagRepository.AnyAsync(e=>e.Id==tagID && !e.IsDeleted);
+            if (!isExist) 
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.TagNotFound);
+            }
+
+            var tag = new Tag { Id = tagID };
+            _tagRepository.Delete(tag);
+            var isSaved = await _unitOfWork.SaveChangesAsync();
+            if (isSaved == 0)
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.DataBaseError);
+            }
+            return new SuccessResponseViewModel<bool>(SuccessCode.TagDeleted);
+        }
     }
 }

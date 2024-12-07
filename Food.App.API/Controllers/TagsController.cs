@@ -37,6 +37,15 @@ namespace Food.App.API.Controllers
             }
             return BadRequest(tag);
         }
-
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int TagID)
+        {
+            var isDeleted = await _tagService.DeleteTag(TagID);
+            if (isDeleted.IsSuccess)
+            {
+                return Ok(isDeleted);
+            }
+            return BadRequest(isDeleted);
+        }
     }
 }
