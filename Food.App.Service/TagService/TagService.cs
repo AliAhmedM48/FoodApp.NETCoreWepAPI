@@ -13,11 +13,14 @@ namespace Food.App.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Tag> _tagRepository;
+        private readonly IRepository<RecipeTag> _recipeTagRepository;
+
 
         public TagService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _tagRepository = unitOfWork.GetRepository<Tag>();
+            _recipeTagRepository = unitOfWork.GetRepository<RecipeTag>();
 
         }
 
@@ -86,6 +89,20 @@ namespace Food.App.Service
                 return new FailureResponseViewModel<bool>(ErrorCode.DataBaseError);
             }
             return new SuccessResponseViewModel<bool>(SuccessCode.TagUpdated);
+        }
+
+        public async Task<ResponseViewModel<TagDetailsViewModel>> GetDetails(int tagId)
+        {
+            var isExist = await _tagRepository.AnyAsync(e => e.Id == tagId && !e.IsDeleted);
+            if (!isExist)
+            {
+                return new FailureResponseViewModel<TagDetailsViewModel>(ErrorCode.TagNotFound);
+            }
+            var recipes = _recipeTagRepository.GetAll(e => e.TagId == tagId);
+            var recipesViewModel = recipes.ProjectTo<TagDetailsViewModel>().FirstOrDefault();
+            
+            var response = new SuccessResponseViewModel<TagDetailsViewModel>(SuccessCode.TagsRetrieved, recipesViewModel);
+            return response;
         }
     }
 }

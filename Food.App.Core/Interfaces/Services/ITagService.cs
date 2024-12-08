@@ -9,6 +9,8 @@ namespace Food.App.Core.Interfaces.Services
         Task<ResponseViewModel<int>> Create(TagCreateViewModel viewModel);
         Task<ResponseViewModel<bool>> DeleteTag(int tagID);
         Task<ResponseViewModel<bool>> UpdateTag(TagUpdateViewModel viewModel);
+        Task<ResponseViewModel<TagDetailsViewModel>> GetDetails(int tagId);
+
 
     }
 }

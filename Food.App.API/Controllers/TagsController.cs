@@ -58,5 +58,18 @@ namespace Food.App.API.Controllers
             }
             return BadRequest(isUpdated);
         }
+        [HttpGet("Details")]
+        public async Task<ActionResult<ResponseViewModel<IEnumerable<TagDetailsViewModel>>>> GetRecipes(int tagId)
+        {
+            var recipesViewModel = await _tagService.GetDetails(tagId);
+
+            //var recipesViewModel =_recipeTagService.GetDetails(tagId);
+            if (recipesViewModel.IsSuccess)
+            {
+                return Ok(recipesViewModel);
+            }
+            return NotFound(recipesViewModel);
+
+        }
     }
 }
