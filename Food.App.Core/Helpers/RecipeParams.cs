@@ -16,4 +16,9 @@ public class RecipeParams
         get => _pageSize;
         set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
     }
+    public int CategoryId { get; set; }
+    public int TagId { get; set; }
+    public int RecipePrice { get; set; }
+
+    public string? RecipeName { get; set; }
 }

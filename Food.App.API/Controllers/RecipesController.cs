@@ -68,7 +68,7 @@ public class RecipesController : ControllerBase
         return StatusCode((int)ErrorCode.DataBaseError, result.Message);
     }
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Update(int id)
+    public async Task<ActionResult> Delete(int id)
     {
         if (!ModelState.IsValid) { }
         var result = await _recipeService.Delete(id);
@@ -82,5 +82,16 @@ public class RecipesController : ControllerBase
         }
         return StatusCode((int)ErrorCode.DataBaseError, result.Message);
 
+    }
+    [HttpPut("update-image")]
+    public async Task<ActionResult> UpdateImage(UpdateReciptImageViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(model);
+
+        }
+        var result = await _recipeService.UpdateRecipeImage(model);
+        return Ok(result);
     }
 }

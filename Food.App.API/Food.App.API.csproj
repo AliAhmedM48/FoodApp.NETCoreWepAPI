@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Food.App.Service\Food.App.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Assets\Images\Recipe\" />
+  </ItemGroup>
+
 </Project>
