@@ -1,4 +1,4 @@
-﻿using Food.App.Core.FileSettings;
+﻿using Food.App.Core.FileSetting;
 using Food.App.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

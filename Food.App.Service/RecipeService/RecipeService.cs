@@ -1,7 +1,7 @@
 ﻿using AutoMapper.QueryableExtensions;
 using Food.App.Core.Entities;
 using Food.App.Core.Enums;
-using Food.App.Core.FileSettings;
+using Food.App.Core.FileSetting;
 using Food.App.Core.Helpers;
 using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
@@ -10,6 +10,7 @@ using Food.App.Core.ViewModels.Recipe;
 using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Food.App.Service.RecipeService;
 public class RecipeService : IRecipeService
@@ -30,9 +31,28 @@ public class RecipeService : IRecipeService
 
     public async Task<ResponseViewModel<PageList<RecipeViewModel>>> GetAll(RecipeParams recipeParams)
     {
-        var query = _repository.GetAll()
-                               .ProjectTo<RecipeViewModel>();
-        var paginatedResult = await PageList<RecipeViewModel>.CreateAsync(query, recipeParams.PageNumber, recipeParams.PageSize);
+        var query = _repository.GetAll();
+        if (!recipeParams.RecipeName.IsNullOrEmpty())
+        {
+            query = query.Where(r => r.Name.Contains(recipeParams.RecipeName));
+        }
+        if (recipeParams.CategoryId > 0)
+        {
+            query = query.Where(r => r.CategoryId == recipeParams.CategoryId);
+        }
+        if (recipeParams.TagId > 0)
+        {
+            query = query.Where(r => r.RecipeTags.Any(x => x.TagId == recipeParams.TagId));
+        }
+        if (recipeParams.RecipePrice > 0)
+        {
+            query = query.Where(r => r.Price == recipeParams.RecipePrice);
+
+        }
+
+
+        var result = query.ProjectTo<RecipeViewModel>();
+        var paginatedResult = await PageList<RecipeViewModel>.CreateAsync(result, recipeParams.PageNumber, recipeParams.PageSize);
         foreach (var item in paginatedResult)
         {
             item.ImagePath = $"{FileSettings.ImagePath}{FileSettings.RecipeImageFolder} {item.ImagePath}";
