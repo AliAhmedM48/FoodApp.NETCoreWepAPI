@@ -1,10 +1,11 @@
 ﻿using Food.App.Core.ViewModels;
+using Food.App.Core.ViewModels.Admin;
 using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
 using Food.App.Core.ViewModels.Users;
 
 namespace Food.App.Core.Interfaces.Services;
-public interface IUserService
+public interface IauthenticationService
 {
     ResponseViewModel<IEnumerable<UserViewModel>> GetAllUsers();
     ResponseViewModel<UserDetailsViewModel> GetUserDetailsById(int id);
@@ -12,6 +13,8 @@ public interface IUserService
     //TODO: Implement method GetAllFavoriteRecipesByUserId
     //IEnumerable<RecipeViewModel> GetAllFavoriteRecipesByUserId(int id);
 
-    Task<ResponseViewModel<int>> Create(UserCreateViewModel viewModel);
+    Task<ResponseViewModel<int>> CreateUser(UserCreateViewModel viewModel);
+    Task<ResponseViewModel<int>> CreateAdmin(AdminCreateViewModel viewModel);
+
 
 }

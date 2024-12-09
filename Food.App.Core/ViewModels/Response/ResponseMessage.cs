@@ -47,6 +47,7 @@ public static class ResponseMessage
         { ErrorCode.UserNotFound, "The specified user could not be found." },
         { ErrorCode.UserNameExist, "The specified username is already in use." },
         { ErrorCode.UserEmailExist, "The specified Email is already in use." },
+        { ErrorCode.UserPhoneExist, "The specified Phone is already in use." },
         
 
         // RECIPE

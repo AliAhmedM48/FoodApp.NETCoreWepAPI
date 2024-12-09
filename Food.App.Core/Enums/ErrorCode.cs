@@ -13,6 +13,7 @@ public enum ErrorCode
     UserNotFound = 200,
     UserNameExist =201,
     UserEmailExist=202,
+    UserPhoneExist=203,
 
     // RECIPE
     RecipeNotFound = 300,

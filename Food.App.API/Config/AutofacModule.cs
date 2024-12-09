@@ -11,7 +11,7 @@ public class AutofacModule : Module
     {
         builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
 
-        builder.RegisterAssemblyTypes(typeof(UserService).Assembly)
+        builder.RegisterAssemblyTypes(typeof(authenticationService).Assembly)
             .Where(a => a.Name.EndsWith("Service"))
             .AsImplementedInterfaces().InstancePerLifetimeScope();
     }

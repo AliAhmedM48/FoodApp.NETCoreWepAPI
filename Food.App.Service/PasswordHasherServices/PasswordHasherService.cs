@@ -1,11 +1,10 @@
 ﻿using System.Security.Cryptography;
-using Food.App.Core.Interfaces.Services;
 
 namespace Food.App.Service.PasswordHasherServices
 {
-    public class PasswordHasherService:IPasswordHasherService
+    public static class PasswordHasherService
     {
-        public String HashPassord(string password)
+        public static String HashPassord(string password)
         {
             var salt = GenerateSalt();
             var hashedPassword = HashPasswordWithSalt(password, salt);
@@ -13,7 +12,7 @@ namespace Food.App.Service.PasswordHasherServices
 
         }
 
-        public bool ValidatePassword(string password, string storedHash)
+        public static bool ValidatePassword(string password, string storedHash)
         {
             var parts = storedHash.Split(':');
             if (parts.Length != 2)
@@ -28,7 +27,7 @@ namespace Food.App.Service.PasswordHasherServices
 
         }
 
-        private String GenerateSalt()
+        private static string GenerateSalt()
         {
             var saltPassword = new byte[16];
             using(var rng = new RNGCryptoServiceProvider())
@@ -38,7 +37,7 @@ namespace Food.App.Service.PasswordHasherServices
             return Convert.ToBase64String(saltPassword);
         }
 
-        private string HashPasswordWithSalt(string password, string salt)
+        private static string HashPasswordWithSalt(string password, string salt)
         {
             var saltBytes = Convert.FromBase64String(salt);
             using (var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, 10000))

@@ -1,17 +1,15 @@
 ﻿using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels;
-using Food.App.Core.ViewModels.Response;
-using Food.App.Core.ViewModels.Users;
-using Microsoft.AspNetCore.Mvc;
+using Food.App.Core.ViewModels.Response;using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IauthenticationService _userService;
 
-    public UsersController(IUserService userService)
+    public UsersController(IauthenticationService userService)
     {
         _userService = userService;
     }
@@ -49,18 +47,7 @@ public class UsersController : ControllerBase
         return Ok(responseViewModel);
     }
 
-    [HttpPost("register")]
-    public async Task<ActionResult> Register(UserCreateViewModel viewModel)
-    {
-        // Call the use case to register the user
-        var isCreated =  await _userService.Create(viewModel);
-        if (!isCreated.IsSuccess)
-        {
-            return BadRequest(isCreated);
-        }
-
-        return Ok(isCreated);
-    }
+    
 
     
 
