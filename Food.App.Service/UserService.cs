@@ -1,12 +1,10 @@
-﻿using Azure;
-using Food.App.Core.Entities;
+﻿using Food.App.Core.Entities;
 using Food.App.Core.Enums;
 using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.MappingProfiles;
 using Food.App.Core.ViewModels;
 using Food.App.Core.ViewModels.Response;
-using Food.App.Core.ViewModels.Tags;
 using Food.App.Core.ViewModels.Users;
 
 namespace Food.App.Service;
@@ -58,17 +56,17 @@ public class UserService : IUserService
         return new SuccessResponseViewModel<UserDetailsViewModel>(SuccessCode.UserDetailsRetrieved, userDetailsViewModel);
     }
 
-    
+
 
     public async Task<ResponseViewModel<int>> Create(UserCreateViewModel viewModel)
     {
-        var isRepatedUserName = _repository.GetAll(e=>e.Username==viewModel.Username).Any();
+        var isRepatedUserName = _repository.GetAll(e => e.Username == viewModel.Username).Any();
         if (isRepatedUserName)
         {
             return new FailureResponseViewModel<int>(ErrorCode.UserNameExist);
         }
 
-        var isRepatedEmail = _repository.GetAll(e=>e.Email==viewModel.Email).Any();
+        var isRepatedEmail = _repository.GetAll(e => e.Email == viewModel.Email).Any();
         if (isRepatedEmail)
         {
             return new FailureResponseViewModel<int>(ErrorCode.UserEmailExist);
@@ -93,5 +91,5 @@ public class UserService : IUserService
     }
 
 
-    
+
 }
