@@ -1,6 +1,8 @@
 ﻿using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels;
 using Food.App.Core.ViewModels.Response;
+using Food.App.Core.ViewModels.Users;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers;
