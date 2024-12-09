@@ -37,6 +37,39 @@ namespace Food.App.API.Controllers
             }
             return BadRequest(tag);
         }
+        [HttpDelete]
+        public async Task<ActionResult> Delete(int TagID)
+        {
+            var isDeleted = await _tagService.DeleteTag(TagID);
+            if (isDeleted.IsSuccess)
+            {
+                return Ok(isDeleted);
+            }
+            return BadRequest(isDeleted);
+        }
 
+        [HttpPut]
+        public async Task<ActionResult> Update(TagUpdateViewModel viewModel)
+        {
+            var isUpdated = await _tagService.UpdateTag(viewModel);
+            if (isUpdated.IsSuccess)
+            {
+                return Ok(isUpdated);
+            }
+            return BadRequest(isUpdated);
+        }
+        [HttpGet("Details")]
+        public async Task<ActionResult<ResponseViewModel<IEnumerable<TagDetailsViewModel>>>> GetRecipes(int tagId)
+        {
+            var recipesViewModel = await _tagService.GetDetails(tagId);
+
+            //var recipesViewModel =_recipeTagService.GetDetails(tagId);
+            if (recipesViewModel.IsSuccess)
+            {
+                return Ok(recipesViewModel);
+            }
+            return NotFound(recipesViewModel);
+
+        }
     }
 }

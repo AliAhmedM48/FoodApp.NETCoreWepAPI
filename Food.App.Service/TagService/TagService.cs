@@ -13,11 +13,14 @@ namespace Food.App.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Tag> _tagRepository;
+        private readonly IRepository<RecipeTag> _recipeTagRepository;
+
 
         public TagService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _tagRepository = unitOfWork.GetRepository<Tag>();
+            _recipeTagRepository = unitOfWork.GetRepository<RecipeTag>();
 
         }
 
@@ -49,6 +52,56 @@ namespace Food.App.Service
             var tags = _tagRepository.GetAll();
             var tagsViewModel = tags.ProjectTo<TagViewModel>().ToList();
             var response = new SuccessResponseViewModel<IEnumerable<TagViewModel>>(SuccessCode.TagsRetrieved , tagsViewModel);
+            return response;
+        }
+
+        public async Task<ResponseViewModel<bool>> DeleteTag(int tagID)
+        {
+            var isExist = await _tagRepository.AnyAsync(e=>e.Id==tagID && !e.IsDeleted);
+            if (!isExist) 
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.TagNotFound);
+            }
+
+            var tag = new Tag { Id = tagID };
+            _tagRepository.Delete(tag);
+            var isSaved = await _unitOfWork.SaveChangesAsync();
+            if (isSaved == 0)
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.DataBaseError);
+            }
+            return new SuccessResponseViewModel<bool>(SuccessCode.TagDeleted);
+        }
+
+        public  async Task<ResponseViewModel<bool>> UpdateTag(TagUpdateViewModel viewModel)
+        {
+            
+            var isExist = await _tagRepository.AnyAsync(e => e.Id == viewModel.Id && !e.IsDeleted);
+            if (!isExist)
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.TagNotFound);
+            }
+            var tag = viewModel.Map<Tag>();
+            _tagRepository.SaveInclude(tag, t=>t.Name);
+            var isSaved = await _unitOfWork.SaveChangesAsync();
+            if (isSaved == 0)
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.DataBaseError);
+            }
+            return new SuccessResponseViewModel<bool>(SuccessCode.TagUpdated);
+        }
+
+        public async Task<ResponseViewModel<TagDetailsViewModel>> GetDetails(int tagId)
+        {
+            var isExist = await _tagRepository.AnyAsync(e => e.Id == tagId && !e.IsDeleted);
+            if (!isExist)
+            {
+                return new FailureResponseViewModel<TagDetailsViewModel>(ErrorCode.TagNotFound);
+            }
+            var recipes = _recipeTagRepository.GetAll(e => e.TagId == tagId);
+            var recipesViewModel = recipes.ProjectTo<TagDetailsViewModel>().FirstOrDefault();
+            
+            var response = new SuccessResponseViewModel<TagDetailsViewModel>(SuccessCode.TagsRetrieved, recipesViewModel);
             return response;
         }
     }
