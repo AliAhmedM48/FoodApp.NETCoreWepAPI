@@ -9,6 +9,7 @@ public enum SuccessCode
     ChangePasswordUpdated = 100,
 
     // USER
+    UserCreated = 201,
     UserDeleted = 202,
     UsersRetrieved = 203,
     UserDetailsRetrieved = 204,

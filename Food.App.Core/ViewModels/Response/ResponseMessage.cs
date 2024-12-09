@@ -9,6 +9,7 @@ public static class ResponseMessage
         { SuccessCode.ChangePasswordUpdated, "Password changed successfully." },
 
         // USER
+        { SuccessCode.UserCreated, "User created successfully." },
         { SuccessCode.UsersRetrieved, "Users retrieved successfully." },
         { SuccessCode.UserDetailsRetrieved, "User details retrieved successfully." },
         { SuccessCode.UserDeleted, "Course deleted successfully."  },
@@ -42,6 +43,9 @@ public static class ResponseMessage
 
         // USER
         { ErrorCode.UserNotFound, "The specified user could not be found." },
+        { ErrorCode.UserNameExist, "The specified username is already in use." },
+        { ErrorCode.UserEmailExist, "The specified Email is already in use." },
+        
 
         // RECIPE
         { ErrorCode.RecipeNotFound, "The specified recipe could not be found." },
