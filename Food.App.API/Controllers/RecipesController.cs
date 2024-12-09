@@ -20,7 +20,7 @@ public class RecipesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ResponseViewModel<PageList<RecipeViewModel>>>> GetAllRecipes([FromQuery] RecipeParams recipeParams)
     {
-        var result = await _recipeService.GetAll(recipeParams);
+        var result = await _recipeService.GetAllForAdmin(recipeParams);
         return Ok(result);
     }
     [HttpGet("{id}")]

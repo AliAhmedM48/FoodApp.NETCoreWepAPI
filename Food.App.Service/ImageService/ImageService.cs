@@ -12,7 +12,7 @@ public class ImageService : IImageService
     public ImageService(IWebHostEnvironment environment)
     {
         _environment = environment;
-        _imagesPath = $"{_environment.WebRootPath}{FileSettings.ImagePath}";
+        _imagesPath = $"{_environment.WebRootPath}{FileSettings.BaseImageUrl}";
 
     }
     public async Task<string> UploadImage(IFormFile imageFile, string folderName)

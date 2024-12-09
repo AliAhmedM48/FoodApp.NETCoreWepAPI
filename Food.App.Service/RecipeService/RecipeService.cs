@@ -31,7 +31,7 @@ public class RecipeService : IRecipeService
 
     public async Task<ResponseViewModel<PageList<RecipeViewModel>>> GetAll(RecipeParams recipeParams)
     {
-        var query = _repository.GetAll();
+        var query = _repository.AsQuerable();
         if (!recipeParams.RecipeName.IsNullOrEmpty())
         {
             query = query.Where(r => r.Name.Contains(recipeParams.RecipeName));
@@ -47,27 +47,55 @@ public class RecipeService : IRecipeService
         if (recipeParams.RecipePrice > 0)
         {
             query = query.Where(r => r.Price == recipeParams.RecipePrice);
-
         }
-
 
         var result = query.ProjectTo<RecipeViewModel>();
         var paginatedResult = await PageList<RecipeViewModel>.CreateAsync(result, recipeParams.PageNumber, recipeParams.PageSize);
         foreach (var item in paginatedResult)
         {
-            item.ImagePath = $"{FileSettings.ImagePath}{FileSettings.RecipeImageFolder} {item.ImagePath}";
+            item.ImagePath = $"{FileSettings.BaseImageUrl}{FileSettings.RecipeImageFolder}/{item.ImagePath}";
         }
         return new SuccessResponseViewModel<PageList<RecipeViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
+    }
+    public async Task<ResponseViewModel<PageList<ReciptDetailsViewModel>>> GetAllForAdmin(RecipeParams recipeParams)
+    {
+        var query = _repository.AsQuerable();
+        if (!recipeParams.RecipeName.IsNullOrEmpty())
+        {
+            query = query.Where(r => r.Name.Contains(recipeParams.RecipeName));
+        }
+        if (recipeParams.CategoryId > 0)
+        {
+            query = query.Where(r => r.CategoryId == recipeParams.CategoryId);
+        }
+        if (recipeParams.TagId > 0)
+        {
+            query = query.Where(r => r.RecipeTags.Any(x => x.TagId == recipeParams.TagId));
+        }
+        if (recipeParams.RecipePrice > 0)
+        {
+            query = query.Where(r => r.Price == recipeParams.RecipePrice);
+        }
+
+        var result = query.ProjectTo<ReciptDetailsViewModel>();
+        var paginatedResult = await PageList<ReciptDetailsViewModel>.CreateAsync(result, recipeParams.PageNumber, recipeParams.PageSize);
+        foreach (var item in paginatedResult)
+        {
+            item.ImagePath = $"{FileSettings.BaseImageUrl}{FileSettings.RecipeImageFolder}/{item.ImagePath}";
+        }
+        return new SuccessResponseViewModel<PageList<ReciptDetailsViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
     }
 
     public ResponseViewModel<RecipeViewModel> GetById(int id)
     {
         var query = _repository.GetAll(u => u.Id == id);
         var recipeViewModel = query.ProjectToForFirstOrDefault<RecipeViewModel>();
+
         if (recipeViewModel is null)
         {
             return new FailureResponseViewModel<RecipeViewModel>(ErrorCode.RecipeNotFound);
         }
+        recipeViewModel.ImagePath = $"{FileSettings.BaseImageUrl}{FileSettings.RecipeImageFolder}/{recipeViewModel.ImagePath}";
         return new SuccessResponseViewModel<RecipeViewModel>(SuccessCode.RecipesRetrieved, recipeViewModel);
 
     }
@@ -83,6 +111,7 @@ public class RecipeService : IRecipeService
         {
             Name = model.Name,
             Description = model.Description,
+            Price = model.Price,
             ImagePath = getImagePath,
             CreatedAt = DateTime.UtcNow,
             CategoryId = model.CategoryId,
