@@ -61,6 +61,8 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
 
     public void HardDelete(TEntity entity) => _dbSet.Remove(entity);
     public IQueryable<TEntity> GetAll() => _dbSet.Where(e => !e.IsDeleted);
+    public IQueryable<TEntity> AsQuerable() => _dbSet.Where(e => !e.IsDeleted);
+
     public IQueryable<TEntity> GetAllWithDeleted() => _dbSet;
     public async Task<TEntity?> GetByIdAsync(int id) => await GetAll().FirstOrDefaultAsync(x => x.Id == id);
     public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> expression) => GetAll().Where(expression);

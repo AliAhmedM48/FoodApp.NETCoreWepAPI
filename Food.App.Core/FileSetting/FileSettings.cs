@@ -8,7 +8,7 @@ public class FileSettings
     {
         _webHostEnvironment = webHostEnvironment;
     }
-    public const string ImagePath = "/Assets/Images/";
+    public const string BaseImageUrl = "/Assets/Images/";
     public const string RecipeImageFolder = "Recipe";
 
 

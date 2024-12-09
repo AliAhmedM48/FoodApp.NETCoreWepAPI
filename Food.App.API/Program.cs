@@ -63,6 +63,7 @@ namespace Food.App.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+            app.UseStaticFiles();
 
 
             app.MapControllers();

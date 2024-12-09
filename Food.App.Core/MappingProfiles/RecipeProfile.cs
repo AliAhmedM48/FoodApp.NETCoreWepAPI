@@ -8,6 +8,10 @@ public class RecipeProfile : Profile
     public RecipeProfile()
     {
         CreateMap<Recipe, RecipeViewModel>().ReverseMap();
+        CreateMap<Recipe, RecipeDetailsViewModel>()
+                                                .ForMember(des => des.CategoryName, opt =>
+                                                 opt.MapFrom(a => a.Category.Name))
+                                                .ForMember(des => des.Tags, opt => opt.MapFrom(x => x.RecipeTags.Select(x => x.Tag.Name)));
 
     }
 

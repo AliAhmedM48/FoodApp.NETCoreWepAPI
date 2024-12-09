@@ -13,6 +13,8 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     IQueryable<TEntity> GetAll();
     IQueryable<TEntity> GetAllWithDeleted();
     IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> expression);
+    IQueryable<TEntity> AsQuerable();
+
     Task<TEntity?> GetByIdAsync(int id);
     void Delete(TEntity entity);
     void DeleteRange(IEnumerable<TEntity> entities);
