@@ -57,7 +57,7 @@ public class RecipeService : IRecipeService
         }
         return new SuccessResponseViewModel<PageList<RecipeViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
     }
-    public async Task<ResponseViewModel<PageList<ReciptDetailsViewModel>>> GetAllForAdmin(RecipeParams recipeParams)
+    public async Task<ResponseViewModel<PageList<RecipeDetailsViewModel>>> GetAllForAdmin(RecipeParams recipeParams)
     {
         var query = _repository.AsQuerable();
         if (!recipeParams.RecipeName.IsNullOrEmpty())
@@ -77,13 +77,13 @@ public class RecipeService : IRecipeService
             query = query.Where(r => r.Price == recipeParams.RecipePrice);
         }
 
-        var result = query.ProjectTo<ReciptDetailsViewModel>();
-        var paginatedResult = await PageList<ReciptDetailsViewModel>.CreateAsync(result, recipeParams.PageNumber, recipeParams.PageSize);
+        var result = query.ProjectTo<RecipeDetailsViewModel>();
+        var paginatedResult = await PageList<RecipeDetailsViewModel>.CreateAsync(result, recipeParams.PageNumber, recipeParams.PageSize);
         foreach (var item in paginatedResult)
         {
             item.ImagePath = $"{FileSettings.BaseImageUrl}{FileSettings.RecipeImageFolder}/{item.ImagePath}";
         }
-        return new SuccessResponseViewModel<PageList<ReciptDetailsViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
+        return new SuccessResponseViewModel<PageList<RecipeDetailsViewModel>>(SuccessCode.RecipesRetrieved, paginatedResult);
     }
 
     public ResponseViewModel<RecipeViewModel> GetById(int id)

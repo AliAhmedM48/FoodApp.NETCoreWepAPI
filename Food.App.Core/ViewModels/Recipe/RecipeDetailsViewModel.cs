@@ -1,5 +1,5 @@
 ﻿namespace Food.App.Core.ViewModels.Recipe;
-public class ReciptDetailsViewModel
+public class RecipeDetailsViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; }

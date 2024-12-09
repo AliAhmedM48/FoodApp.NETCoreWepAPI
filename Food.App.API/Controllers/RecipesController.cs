@@ -1,4 +1,5 @@
 ﻿using Food.App.Core.Enums;
+using Food.App.Core.Extensions;
 using Food.App.Core.Helpers;
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels.Recipe;
@@ -20,7 +21,15 @@ public class RecipesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ResponseViewModel<PageList<RecipeViewModel>>>> GetAllRecipes([FromQuery] RecipeParams recipeParams)
     {
+        var result = await _recipeService.GetAll(recipeParams);
+        Response.AddPaginationHeader(result.Data);
+        return Ok(result);
+    }
+    [HttpGet("admin")]
+    public async Task<ActionResult<ResponseViewModel<PageList<RecipeDetailsViewModel>>>> GetAllRecipesAdmin([FromQuery] RecipeParams recipeParams)
+    {
         var result = await _recipeService.GetAllForAdmin(recipeParams);
+        Response.AddPaginationHeader(result.Data);
         return Ok(result);
     }
     [HttpGet("{id}")]
