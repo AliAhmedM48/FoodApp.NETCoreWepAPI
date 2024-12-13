@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Food.App.Core.Entities;
-using Food.App.Core.ViewModels.Admin;
+using Food.App.Core.ViewModels.Authentication;
 using Food.App.Core.ViewModels.Users;
 
 namespace Food.App.Core.MappingProfiles

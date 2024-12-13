@@ -7,12 +7,15 @@ public enum SuccessCode
 
     // AUTH
     ChangePasswordUpdated = 100,
+    LoginCorrectly  =101,
 
     // USER
     UserCreated = 201,
     UserDeleted = 202,
     UsersRetrieved = 203,
     UserDetailsRetrieved = 204,
+
+    AdminCreated=250,
 
     // RECIPE
     RecipeCreated = 300,

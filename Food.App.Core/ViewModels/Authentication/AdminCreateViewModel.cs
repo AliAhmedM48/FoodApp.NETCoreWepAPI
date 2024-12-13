@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Food.App.Core.ViewModels.Admin
+namespace Food.App.Core.ViewModels.Authentication
 {
     public class AdminCreateViewModel
     {

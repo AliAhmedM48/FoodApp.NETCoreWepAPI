@@ -1,10 +1,11 @@
-﻿using Food.App.Core.Entities;
+﻿using System.Data;
+using Food.App.Core.Entities;
 using Food.App.Core.Enums;
 using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.MappingProfiles;
 using Food.App.Core.ViewModels;
-using Food.App.Core.ViewModels.Admin;
+using Food.App.Core.ViewModels.Authentication;
 using Food.App.Core.ViewModels.Response;
 using Food.App.Core.ViewModels.Users;
 using Food.App.Service.PasswordHasherServices;
@@ -114,12 +115,38 @@ public class authenticationService : IauthenticationService
         var isSaved = await _unitOfWork.SaveChangesAsync() > 0;
         if (isSaved)
         {
-            return new SuccessResponseViewModel<int>(SuccessCode.UserCreated);
+            return new SuccessResponseViewModel<int>(SuccessCode.AdminCreated);
         }
         return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
 
     }
 
+    public async Task<ResponseViewModel<bool>> Login(LoginViewModel loginViewModel,Role role)
+    {
+        Person? person;
+        if (role == Role.Admin)
+        {
+            person = _unitOfWork.GetRepository<Admin>().GetAll(e => e.Username == loginViewModel.Username).FirstOrDefault();
+        }
+        else if (role == Role.User)
+        {
+            person = _unitOfWork.GetRepository<User>().GetAll(e => e.Username == loginViewModel.Username).FirstOrDefault();
+        }
+        else { 
+            person =default(Person);
+        }
 
+        if (person == null)
+        {
+            return new FailureResponseViewModel<bool>(ErrorCode.UserNotFound);
+        }
 
+        var correctPassword = PasswordHasherService.ValidatePassword(loginViewModel.Password, person.Password);
+        if (correctPassword)
+        {
+            return new SuccessResponseViewModel<bool>(SuccessCode.LoginCorrectly);
+
+        }
+        return new FailureResponseViewModel<bool>(ErrorCode.IncorrectPassword);
+    }
 }

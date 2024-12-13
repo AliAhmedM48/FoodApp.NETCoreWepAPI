@@ -8,6 +8,7 @@ public enum ErrorCode
 
     // AUTH
     ChangePasswordError = 100,
+    IncorrectPassword = 101,
 
     // USER
     UserNotFound = 200,
