@@ -129,7 +129,7 @@ public class authenticationService : IauthenticationService
 
     }
 
-    public async Task<ResponseViewModel<AuthModel>> Login(LoginViewModel loginViewModel, Role role)
+    public async Task<ResponseViewModel<AuthModel>> Login(LoginViewModel loginViewModel)
     {
         Person? person;
         var authModel = new AuthModel();
@@ -146,12 +146,13 @@ public class authenticationService : IauthenticationService
         var correctPassword = PasswordHasherService.ValidatePassword(loginViewModel.Password, person.Password);
         if (correctPassword)
         {
-            var jwtSecurityToken = await CreateJwtToken(person);
+            var personRole = person.Role;
+
+            var jwtSecurityToken = await CreateJwtToken(person, personRole);
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.IsAuthenticated = true;
             authModel.Email = person.Email;
-
 
             return new SuccessResponseViewModel<AuthModel>(SuccessCode.LoginCorrectly, authModel);
 
@@ -159,7 +160,7 @@ public class authenticationService : IauthenticationService
         return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
     }
 
-    public async Task<JwtSecurityToken> CreateJwtToken(Person person)
+    public async Task<JwtSecurityToken> CreateJwtToken(Person person,Role role)
     {
 
         var roleClaims = new List<Claim>();
@@ -170,6 +171,8 @@ public class authenticationService : IauthenticationService
                new Claim(JwtRegisteredClaimNames.GivenName,$"{ person.Username} "),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                new Claim(ClaimTypes.NameIdentifier,$"{ person.Id} "),
+               new Claim(ClaimTypes.Role, role.ToString()),
+
 
         };
 
