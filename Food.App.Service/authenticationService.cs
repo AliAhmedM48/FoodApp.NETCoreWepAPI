@@ -160,18 +160,17 @@ public class authenticationService : IauthenticationService
         return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
     }
 
-    public async Task<JwtSecurityToken> CreateJwtToken(Person person,Role role)
+    public async Task<JwtSecurityToken> CreateJwtToken(Person person, Role role)
     {
 
         var roleClaims = new List<Claim>();
-
 
         var claims = new[]
         {
                new Claim(JwtRegisteredClaimNames.GivenName,$"{ person.Username} "),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                new Claim(ClaimTypes.NameIdentifier,$"{ person.Id} "),
-               new Claim(ClaimTypes.Role, role.ToString()),
+               new Claim(ClaimTypes.Role, ((int)role).ToString()),
 
 
         };

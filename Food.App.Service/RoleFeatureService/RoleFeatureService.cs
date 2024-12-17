@@ -10,9 +10,10 @@ public class RoleFeatureService : IRoleFeatureService
     {
         _UnitOfWork = unitOfWork;
     }
-    public Task<bool> HasAcess(Role role, Feature feature)
+    public async Task<bool> HasAcess(Role role, Feature feature)
     {
-        var result = _UnitOfWork.GetRepository<RoleFeature>().AnyAsync(x => x.Role == role && x.Feature == feature);
+        var result = await _UnitOfWork.GetRepository<RoleFeature>().AnyAsync(x => x.Role == role && x.Feature == feature);
         return result;
     }
+
 }

@@ -1,10 +1,12 @@
-﻿using Food.App.Core.Enums;
+﻿using Food.App.API.Filters;
+using Food.App.Core.Enums;
 using Food.App.Core.Extensions;
 using Food.App.Core.Helpers;
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels.Recipe;
 using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers;
@@ -19,6 +21,8 @@ public class RecipesController : ControllerBase
         _recipeService = recipeService;
     }
     [HttpGet]
+    [Authorize]
+    [TypeFilter(typeof(CustomizeAuthorizeAttribute),Arguments =new object[] {Feature.GetRecipes})]
     public async Task<ActionResult<ResponseViewModel<PageList<RecipeViewModel>>>> GetAllRecipes([FromQuery] RecipeParams recipeParams)
     {
         var result = await _recipeService.GetAll(recipeParams);
