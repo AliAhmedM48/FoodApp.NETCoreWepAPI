@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Food.App.Core.Entities;
+﻿using Food.App.Core.Entities;
 using Food.App.Core.Enums;
 using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
@@ -9,6 +8,12 @@ using Food.App.Core.ViewModels.Authentication;
 using Food.App.Core.ViewModels.Response;
 using Food.App.Core.ViewModels.Users;
 using Food.App.Service.PasswordHasherServices;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Food.App.Service;
 public class authenticationService : IauthenticationService
@@ -16,11 +21,14 @@ public class authenticationService : IauthenticationService
     private readonly IRepository<User> _repository;
     private readonly IUnitOfWork _unitOfWork;
 
+    private readonly JWT _jwt;
 
-    public authenticationService(IUnitOfWork unitOfWork)
+    public authenticationService(IUnitOfWork unitOfWork, IOptions<JWT> jwt)
     {
         _unitOfWork = unitOfWork;
         _repository = unitOfWork.GetRepository<User>();
+        _jwt = jwt.Value;
+
     }
     public async Task<ResponseViewModel<bool>> DeleteUserByIdAsync(int id)
     {
@@ -121,32 +129,61 @@ public class authenticationService : IauthenticationService
 
     }
 
-    public async Task<ResponseViewModel<bool>> Login(LoginViewModel loginViewModel,Role role)
+    public async Task<ResponseViewModel<AuthModel>> Login(LoginViewModel loginViewModel, Role role)
     {
         Person? person;
-        if (role == Role.Admin)
-        {
-            person = _unitOfWork.GetRepository<Admin>().GetAll(e => e.Username == loginViewModel.Username).FirstOrDefault();
-        }
-        else if (role == Role.User)
-        {
-            person = _unitOfWork.GetRepository<User>().GetAll(e => e.Username == loginViewModel.Username).FirstOrDefault();
-        }
-        else { 
-            person =default(Person);
-        }
+        var authModel = new AuthModel();
+
+
+        person = await _unitOfWork.GetRepository<Admin>().GetAll(e => e.Email == loginViewModel.Email).FirstOrDefaultAsync();
 
         if (person == null)
         {
-            return new FailureResponseViewModel<bool>(ErrorCode.UserNotFound);
+            return new FailureResponseViewModel<AuthModel>(ErrorCode.UserNotFound);
+
         }
 
         var correctPassword = PasswordHasherService.ValidatePassword(loginViewModel.Password, person.Password);
         if (correctPassword)
         {
-            return new SuccessResponseViewModel<bool>(SuccessCode.LoginCorrectly);
+            var jwtSecurityToken = await CreateJwtToken(person);
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
+            authModel.IsAuthenticated = true;
+            authModel.Email = person.Email;
+
+
+            return new SuccessResponseViewModel<AuthModel>(SuccessCode.LoginCorrectly, authModel);
 
         }
-        return new FailureResponseViewModel<bool>(ErrorCode.IncorrectPassword);
+        return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
+    }
+
+    public async Task<JwtSecurityToken> CreateJwtToken(Person person)
+    {
+
+        var roleClaims = new List<Claim>();
+
+
+        var claims = new[]
+        {
+               new Claim(JwtRegisteredClaimNames.GivenName,$"{ person.Username} "),
+               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+               new Claim(ClaimTypes.NameIdentifier,$"{ person.Id} "),
+
+        };
+
+        var symtricSecruityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+        var signingCredentials = new SigningCredentials(symtricSecruityKey, SecurityAlgorithms.HmacSha256);
+
+        var symtricSecruityToken = new JwtSecurityToken
+        (
+            issuer: _jwt.Issuer,
+            audience: _jwt.Audience,
+            claims: claims,
+            expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+            signingCredentials: signingCredentials);
+
+        return symtricSecruityToken;
     }
 }

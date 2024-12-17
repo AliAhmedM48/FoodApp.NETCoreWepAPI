@@ -7,8 +7,8 @@ using Food.App.API.Extensions;
 using Food.App.API.Middlewares;
 using Food.App.Core.MappingProfiles;
 using Food.App.Core.Validation;
+using Food.App.Core.ViewModels.Authentication;
 using Food.App.Repository;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 namespace Food.App.API
@@ -39,6 +39,9 @@ namespace Food.App.API
 
             builder.Services.AddValidatorsFromAssemblyContaining<RecipeValidator>();
             builder.Services.AddCompressionServices();
+            builder.Services.AddIdentityServices(builder.Configuration);
+            builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

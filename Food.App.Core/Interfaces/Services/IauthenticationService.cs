@@ -1,7 +1,6 @@
 ﻿using Food.App.Core.Enums;
 using Food.App.Core.ViewModels;
 using Food.App.Core.ViewModels.Authentication;
-using Food.App.Core.ViewModels.Recipe.Create;
 using Food.App.Core.ViewModels.Response;
 using Food.App.Core.ViewModels.Users;
 
@@ -16,7 +15,7 @@ public interface IauthenticationService
 
     Task<ResponseViewModel<int>> CreateUser(UserCreateViewModel viewModel);
     Task<ResponseViewModel<int>> CreateAdmin(AdminCreateViewModel viewModel);
-    Task<ResponseViewModel<bool>> Login(LoginViewModel loginViewModel,Role role);
+    Task<ResponseViewModel<AuthModel>> Login(LoginViewModel loginViewModel, Role role);
 
 
 }
