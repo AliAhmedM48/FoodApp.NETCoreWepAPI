@@ -45,6 +45,11 @@ namespace Food.App.Service
               return  new FailureResponseViewModel<bool>(ErrorCode.CategoryWithSameNameFound);
             }
 
+            if (!Validate(command.Name)) 
+            {
+                return new FailureResponseViewModel<bool>(ErrorCode.ValidationError);
+            }
+
             await repo.AddAsync(mapper.Map<Category>());
 
             return new SuccessResponseViewModel<bool>(SuccessCode.CategoryCreated,true);
@@ -76,6 +81,28 @@ namespace Food.App.Service
             }
             categoryfound.IsDeleted = true;
             return new SuccessResponseViewModel<bool>(SuccessCode.CategoryUpdated, true);
+        }
+
+        public bool Validate(string name)
+        {
+            if (string.IsNullOrEmpty(name) || name.Length > 50)
+            {
+                return false;
+            }
+
+            foreach (char letter in name)
+            {
+                if (letter == ' ')
+                {
+                    continue;
+                }
+                if (!char.IsLetter(letter))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
     }
