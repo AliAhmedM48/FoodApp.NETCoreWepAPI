@@ -1,5 +1,4 @@
-﻿using Food.App.Core.Enums;
-using Food.App.Core.Interfaces.Services;
+﻿using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels;
 using Food.App.Core.ViewModels.Authentication;
 using Food.App.Core.ViewModels.Response;
@@ -43,7 +42,7 @@ namespace Food.App.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginViewModel loginViewModel)
         {
-            var correctLogin = await _authenticationService.Login(loginViewModel, Role.User);
+            var correctLogin = await _authenticationService.Login(loginViewModel);
             if (!correctLogin.IsSuccess)
             {
                 return BadRequest(correctLogin);
@@ -54,7 +53,7 @@ namespace Food.App.API.Controllers
         [HttpPost("login-admin")]
         public async Task<ActionResult> LoginAdmin(LoginViewModel loginViewModel)
         {
-            var correctLogin = await _authenticationService.Login(loginViewModel, Role.Admin);
+            var correctLogin = await _authenticationService.Login(loginViewModel);
             if (!correctLogin.IsSuccess)
             {
                 return BadRequest(correctLogin);
