@@ -3,6 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using FluentValidation;
 using Food.App.API.Config;
+using Food.App.API.Extensions;
 using Food.App.API.Middlewares;
 using Food.App.Core.MappingProfiles;
 using Food.App.Core.Validation;
@@ -37,13 +38,7 @@ namespace Food.App.API
             builder.Services.AddAutoMapper(typeof(RecipeProfile).Assembly);
 
             builder.Services.AddValidatorsFromAssemblyContaining<RecipeValidator>();
-            builder.Services.AddResponseCompression(opt =>
-            {
-                opt.EnableForHttps = true;
-                opt.Providers.Add<GzipCompressionProvider>();
-                opt.Providers.Add<BrotliCompressionProvider>();
-
-            });
+            builder.Services.AddCompressionServices();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
