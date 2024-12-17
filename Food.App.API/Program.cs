@@ -7,6 +7,7 @@ using Food.App.API.Middlewares;
 using Food.App.Core.MappingProfiles;
 using Food.App.Core.Validation;
 using Food.App.Repository;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 namespace Food.App.API
@@ -36,7 +37,13 @@ namespace Food.App.API
             builder.Services.AddAutoMapper(typeof(RecipeProfile).Assembly);
 
             builder.Services.AddValidatorsFromAssemblyContaining<RecipeValidator>();
+            builder.Services.AddResponseCompression(opt =>
+            {
+                opt.EnableForHttps = true;
+                opt.Providers.Add<GzipCompressionProvider>();
+                opt.Providers.Add<BrotliCompressionProvider>();
 
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
