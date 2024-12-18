@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/tags/")]
     [ApiController]
     public class TagsController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace Food.App.API.Controllers
         [HttpGet]
         public ActionResult<ResponseViewModel<IEnumerable<TagViewModel>>> Get()
         {
-            var tagsViewModel =  _tagService.GetAllTags();
+            var tagsViewModel = _tagService.GetAllTags();
             if (tagsViewModel.IsSuccess)
             {
                 return Ok(tagsViewModel);
@@ -58,7 +58,7 @@ namespace Food.App.API.Controllers
             }
             return BadRequest(isUpdated);
         }
-        [HttpGet("Details")]
+        [HttpGet("details")]
         public async Task<ActionResult<ResponseViewModel<IEnumerable<TagDetailsViewModel>>>> GetRecipes(int tagId)
         {
             var recipesViewModel = await _tagService.GetDetails(tagId);

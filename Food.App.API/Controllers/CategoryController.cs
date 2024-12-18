@@ -2,14 +2,12 @@
 using Food.App.Core.Interfaces.Services;
 using Food.App.Core.ViewModels.Categories;
 using Food.App.Core.ViewModels.Response;
-using Food.App.Repository;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Food.App.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/categories/")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
@@ -22,9 +20,9 @@ namespace Food.App.API.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        [HttpGet("AllCategories")]
+        [HttpGet]
 
-        public ActionResult<ResponseViewModel<IEnumerable<CategoryViewModel>>> GetCategories() 
+        public ActionResult<ResponseViewModel<IEnumerable<CategoryViewModel>>> GetCategories()
         {
             var categories = service.GetCategories();
 
@@ -33,11 +31,11 @@ namespace Food.App.API.Controllers
 
         [HttpGet("{id}")]
 
-        public async  Task<ActionResult<ResponseViewModel<CategoryViewModelInclude>>> GetCategoryInclude(int id) 
+        public async Task<ActionResult<ResponseViewModel<CategoryViewModelInclude>>> GetCategoryInclude(int id)
         {
             var categories = await service.GetCategoriesInclude(id);
 
-            if (categories.IsSuccess) 
+            if (categories.IsSuccess)
             {
                 return Ok(categories);
             }
@@ -46,14 +44,14 @@ namespace Food.App.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("AddCategory")]
+        [HttpPost]
 
-        public async Task<ActionResult> CreateCategory([FromBody] CreateCategoryViewModel category) 
+        public async Task<ActionResult> CreateCategory([FromBody] CreateCategoryViewModel category)
         {
-          var Added = await service.CreateCategory(category);
-            if (Added.IsSuccess) 
+            var Added = await service.CreateCategory(category);
+            if (Added.IsSuccess)
             {
-               await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync();
                 return Ok("Category is added successfully");
             }
 
@@ -61,13 +59,13 @@ namespace Food.App.API.Controllers
         }
 
         [Authorize]
-        [HttpDelete("DeleteCategory/{id}")]
+        [HttpDelete("{id}")]
 
-        public async Task<ActionResult> DeleteCategory(int id) 
+        public async Task<ActionResult> DeleteCategory(int id)
         {
             var Deleted = await service.DeleteCategory(id);
 
-            if (Deleted.IsSuccess) 
+            if (Deleted.IsSuccess)
             {
                 await unitOfWork.SaveChangesAsync();
                 return Ok("Category is deleted successfully ");
