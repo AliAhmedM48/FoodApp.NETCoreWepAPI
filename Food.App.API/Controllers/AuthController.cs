@@ -40,19 +40,6 @@ namespace Food.App.API.Controllers
             return Ok(correctLogin);
         }
 
-        [HttpPost("login-admin")]
-        public async Task<ActionResult> LoginAdmin(LoginViewModel loginViewModel)
-        {
-            var correctLogin = await _authenticationService.LoginAsync(loginViewModel);
-            if (!correctLogin.IsSuccess)
-            {
-                return BadRequest(correctLogin);
-            }
-            return Ok(correctLogin);
-        }
-
-
-
         [HttpGet]
         public ActionResult<ResponseViewModel<List<UserViewModel>>> GetAllUsers()
         {

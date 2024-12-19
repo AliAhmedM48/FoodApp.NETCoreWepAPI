@@ -96,6 +96,7 @@ public class AuthenticationService : IAuthenticationService
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.IsAuthenticated = true;
             authModel.Email = user.Email;
+            authModel.UserName = user.Username;
 
             return new SuccessResponseViewModel<AuthModel>(SuccessCode.LoginCorrectly, authModel);
         }
@@ -108,7 +109,7 @@ public class AuthenticationService : IAuthenticationService
         var authModel = new AuthModel();
 
 
-      var  user = await _unitOfWork.GetRepository<User>().GetAll(e => e.Email == loginViewModel.Email).FirstOrDefaultAsync();
+        var user = await _unitOfWork.GetRepository<User>().GetAll(e => e.Email == loginViewModel.Email).FirstOrDefaultAsync();
 
         if (user == null)
         {
@@ -126,6 +127,7 @@ public class AuthenticationService : IAuthenticationService
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.IsAuthenticated = true;
             authModel.Email = user.Email;
+            authModel.UserName = user.Username;
 
             return new SuccessResponseViewModel<AuthModel>(SuccessCode.LoginCorrectly, authModel);
 
