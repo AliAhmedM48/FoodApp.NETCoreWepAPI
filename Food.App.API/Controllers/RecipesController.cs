@@ -29,13 +29,7 @@ public class RecipesController : ControllerBase
         Response.AddPaginationHeader(result.Data);
         return Ok(result);
     }
-    [HttpGet("admin")]
-    public async Task<ActionResult<ResponseViewModel<PageList<RecipeDetailsViewModel>>>> GetAllRecipesAdmin([FromQuery] RecipeParams recipeParams)
-    {
-        var result = await _recipeService.GetAllForAdmin(recipeParams);
-        Response.AddPaginationHeader(result.Data);
-        return Ok(result);
-    }
+
     [HttpGet("{id}")]
     public ActionResult<ResponseViewModel<RecipeViewModel>> GetById(int id)
     {

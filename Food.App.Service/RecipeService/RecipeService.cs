@@ -15,14 +15,12 @@ using Microsoft.IdentityModel.Tokens;
 namespace Food.App.Service.RecipeService;
 public class RecipeService : IRecipeService
 {
-    private readonly IRepository<Recipe> _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IImageService _imageService;
 
     public RecipeService(IUnitOfWork unitOfWork, IImageService imageService)
     {
         _unitOfWork = unitOfWork;
-        _repository = unitOfWork.GetRepository<Recipe>();
         _imageService = imageService;
     }
 
@@ -31,7 +29,7 @@ public class RecipeService : IRecipeService
 
     public async Task<ResponseViewModel<PageList<RecipeViewModel>>> GetAll(RecipeParams recipeParams)
     {
-        var query = _repository.AsQuerable();
+        var query = _unitOfWork.GetRepository<Recipe>().AsQuerable();
         if (!recipeParams.RecipeName.IsNullOrEmpty())
         {
             query = query.Where(r => r.Name.Contains(recipeParams.RecipeName));
@@ -59,7 +57,7 @@ public class RecipeService : IRecipeService
     }
     public async Task<ResponseViewModel<PageList<RecipeDetailsViewModel>>> GetAllForAdmin(RecipeParams recipeParams)
     {
-        var query = _repository.AsQuerable();
+        var query = _unitOfWork.GetRepository<Recipe>().AsQuerable();
         if (!recipeParams.RecipeName.IsNullOrEmpty())
         {
             query = query.Where(r => r.Name.Contains(recipeParams.RecipeName));
@@ -88,7 +86,7 @@ public class RecipeService : IRecipeService
 
     public ResponseViewModel<RecipeViewModel> GetById(int id)
     {
-        var query = _repository.GetAll(u => u.Id == id);
+        var query = _unitOfWork.GetRepository<Recipe>().GetAll(u => u.Id == id);
         var recipeViewModel = query.ProjectToForFirstOrDefault<RecipeViewModel>();
 
         if (recipeViewModel is null)
@@ -101,12 +99,22 @@ public class RecipeService : IRecipeService
     }
     public async Task<ResponseViewModel<int>> Create(CreateRecipeViewModel model)
     {
-        var isRecipeExist = await _repository.AnyAsync(x => x.Name == model.Name);
+        var isRecipeExist = await _unitOfWork.GetRepository<Recipe>().AnyAsync(x => x.Name == model.Name);
         if (isRecipeExist)
         {
             return new FailureResponseViewModel<int>(ErrorCode.RecipeAlreadyExist);
         }
+        var validTags = await _unitOfWork.GetRepository<Tag>().AsQuerable().Where(x => model.TagIds.Contains(x.Id)).ToListAsync();
+        var invalidTags = model.TagIds.Except(model.TagIds).ToList();
+        var response = new SuccessResponseViewModel<int>(SuccessCode.RecipeCreated);
+
+        if (invalidTags.Any())
+        {
+            response.CustomMessage = "some tags do not exist";
+
+        }
         var getImagePath = await _imageService.UploadImage(model.ImageFile, FileSettings.RecipeImageFolder);
+
         var receipe = new Recipe
         {
             Name = model.Name,
@@ -120,18 +128,18 @@ public class RecipeService : IRecipeService
                 TagId = x
             }).ToList(),
         };
-        await _repository.AddAsync(receipe);
+        await _unitOfWork.GetRepository<Recipe>().AddAsync(receipe);
 
         var result = await _unitOfWork.SaveChangesAsync() > 0;
 
-        return result ? new SuccessResponseViewModel<int>(SuccessCode.RecipeCreated, data: receipe.Id)
+        return result ? response
                       : new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
 
     }
     public async Task<ResponseViewModel<int>> Update(UpdateRecipeViewModel model)
     {
 
-        var isReciptExist = await _repository.DoesEntityExistAsync(model.RecipeId);
+        var isReciptExist = await _unitOfWork.GetRepository<Recipe>().DoesEntityExistAsync(model.RecipeId);
         if (isReciptExist)
         {
             var receipt = new Recipe
@@ -142,7 +150,7 @@ public class RecipeService : IRecipeService
                 CategoryId = model.CategoryId
             };
 
-            _repository.SaveInclude(receipt, x => x.Name, x => x.Description, x => x.CategoryId);
+            _unitOfWork.GetRepository<Recipe>().SaveInclude(receipt, x => x.Name, x => x.Description, x => x.CategoryId);
             await _unitOfWork.SaveChangesAsync();
             return new SuccessResponseViewModel<int>(SuccessCode.RecipeUpdated, data: model.RecipeId);
 
@@ -154,7 +162,7 @@ public class RecipeService : IRecipeService
     }
     public async Task<ResponseViewModel<int>> UpdateRecipeImage(UpdateReciptImageViewModel model)
     {
-        var isReciptExist = await _repository.DoesEntityExistAsync(model.Id);
+        var isReciptExist = await _unitOfWork.GetRepository<Recipe>().DoesEntityExistAsync(model.Id);
         if (isReciptExist)
         {
             var result = await _unitOfWork.GetRepository<Recipe>().GetByIdAsync(model.Id);
@@ -166,7 +174,7 @@ public class RecipeService : IRecipeService
                 ImagePath = getImagePath,
             };
 
-            _repository.SaveInclude(receipt, x => x.ImagePath);
+            _unitOfWork.GetRepository<Recipe>().SaveInclude(receipt, x => x.ImagePath);
             await _unitOfWork.SaveChangesAsync();
         }
         return new SuccessResponseViewModel<int>(SuccessCode.RecipeUpdated, data: model.Id);
@@ -175,7 +183,7 @@ public class RecipeService : IRecipeService
     public async Task<ResponseViewModel<int>> Delete(int id)
     {
         var isRecipeExist = await _unitOfWork.GetRepository<Recipe>()
-                                             .AnyAsync(x => x.Id == id && !x.IsDeleted);
+                                            .AnyAsync(x => x.Id == id && !x.IsDeleted);
         if (isRecipeExist)
         {
             var recipe = new Recipe

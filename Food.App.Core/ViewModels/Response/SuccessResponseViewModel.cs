@@ -10,5 +10,6 @@ public class SuccessResponseViewModel<T> : ResponseViewModel<T>
         SuccessCode = successCode;
         Data = data;
         Message = ResponseMessage.Success(successCode);
+
     }
 }

@@ -19,7 +19,6 @@ using System.Text;
 namespace Food.App.Service;
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly IRepository<User> _repository;
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly JWT _jwt;
@@ -27,34 +26,33 @@ public class AuthenticationService : IAuthenticationService
     public AuthenticationService(IUnitOfWork unitOfWork, IOptions<JWT> jwt)
     {
         _unitOfWork = unitOfWork;
-        _repository = unitOfWork.GetRepository<User>();
         _jwt = jwt.Value;
 
     }
     public async Task<ResponseViewModel<bool>> DeleteUserByIdAsync(int id)
     {
-        var isExist = await _repository.DoesEntityExistAsync(id);
+        var isExist = await _unitOfWork.GetRepository<User>().DoesEntityExistAsync(id);
 
         if (!isExist)
         {
             return new FailureResponseViewModel<bool>(ErrorCode.UserNotFound);
         }
 
-        _repository.Delete(new User { Id = id });
+        _unitOfWork.GetRepository<User>().Delete(new User { Id = id });
         await _unitOfWork.SaveChangesAsync();
         return new SuccessResponseViewModel<bool>(SuccessCode.UserDeleted);
     }
 
     public ResponseViewModel<IEnumerable<UserViewModel>> GetAllUsers()
     {
-        var users = _repository.GetAll();
+        var users = _unitOfWork.GetRepository<User>().GetAll();
         var userViewModels = users.ProjectTo<UserViewModel>().ToList();
         return new SuccessResponseViewModel<IEnumerable<UserViewModel>>(SuccessCode.UsersRetrieved, userViewModels);
     }
 
     public ResponseViewModel<UserDetailsViewModel> GetUserDetailsById(int id)
     {
-        var users = _repository.GetAll(u => u.Id == id);
+        var users = _unitOfWork.GetRepository<User>().GetAll(u => u.Id == id);
         var userDetailsViewModel = users.ProjectToForFirstOrDefault<UserDetailsViewModel>();
 
         if (userDetailsViewModel == null)
