@@ -11,27 +11,17 @@ namespace Food.App.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        IauthenticationService _authenticationService;
-        public AuthController(IauthenticationService authenticationService)
+        IAuthenticationService _authenticationService;
+        public AuthController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
         }
-        [HttpPost("register-admin")]
-        public async Task<ActionResult> RegisterAdmin(AdminCreateViewModel viewModel)
-        {
-            var isCreated = await _authenticationService.CreateAdmin(viewModel);
-            if (!isCreated.IsSuccess)
-            {
-                return BadRequest(isCreated);
-            }
 
-            return Ok(isCreated);
-        }
 
         [HttpPost("register")]
         public async Task<ActionResult> Register(UserCreateViewModel viewModel)
         {
-            var isCreated = await _authenticationService.CreateUser(viewModel);
+            var isCreated = await _authenticationService.RegisterAsync(viewModel);
             if (!isCreated.IsSuccess)
             {
                 return BadRequest(isCreated);
@@ -42,7 +32,7 @@ namespace Food.App.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login(LoginViewModel loginViewModel)
         {
-            var correctLogin = await _authenticationService.Login(loginViewModel);
+            var correctLogin = await _authenticationService.LoginAsync(loginViewModel);
             if (!correctLogin.IsSuccess)
             {
                 return BadRequest(correctLogin);
@@ -53,7 +43,7 @@ namespace Food.App.API.Controllers
         [HttpPost("login-admin")]
         public async Task<ActionResult> LoginAdmin(LoginViewModel loginViewModel)
         {
-            var correctLogin = await _authenticationService.Login(loginViewModel);
+            var correctLogin = await _authenticationService.LoginAsync(loginViewModel);
             if (!correctLogin.IsSuccess)
             {
                 return BadRequest(correctLogin);

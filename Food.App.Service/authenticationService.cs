@@ -1,4 +1,5 @@
-﻿using Food.App.Core.Entities;
+﻿using AutoMapper.QueryableExtensions;
+using Food.App.Core.Entities;
 using Food.App.Core.Enums;
 using Food.App.Core.Interfaces;
 using Food.App.Core.Interfaces.Services;
@@ -16,14 +17,14 @@ using System.Security.Claims;
 using System.Text;
 
 namespace Food.App.Service;
-public class authenticationService : IauthenticationService
+public class AuthenticationService : IAuthenticationService
 {
     private readonly IRepository<User> _repository;
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly JWT _jwt;
 
-    public authenticationService(IUnitOfWork unitOfWork, IOptions<JWT> jwt)
+    public AuthenticationService(IUnitOfWork unitOfWork, IOptions<JWT> jwt)
     {
         _unitOfWork = unitOfWork;
         _repository = unitOfWork.GetRepository<User>();
@@ -64,26 +65,20 @@ public class authenticationService : IauthenticationService
 
         return new SuccessResponseViewModel<UserDetailsViewModel>(SuccessCode.UserDetailsRetrieved, userDetailsViewModel);
     }
-
-
-    public async Task<ResponseViewModel<int>> CreateUser(UserCreateViewModel viewModel)
+    public async Task<ResponseViewModel<AuthModel>> RegisterAsync(UserCreateViewModel viewModel)
     {
-        var isRepatedUserName = await _unitOfWork.GetRepository<Person>().AnyAsync(e => e.Username == viewModel.Username);
+        var authModel = new AuthModel();
+
+        var isRepatedUserName = await _unitOfWork.GetRepository<User>().AnyAsync(e => e.Username == viewModel.Username);
         if (isRepatedUserName)
         {
-            return new FailureResponseViewModel<int>(ErrorCode.UserNameExist);
+            return new FailureResponseViewModel<AuthModel>(ErrorCode.UserNameExist);
         }
 
-        var isRepatedEmail = await _unitOfWork.GetRepository<Person>().AnyAsync(e => e.Email == viewModel.Email);
+        var isRepatedEmail = await _unitOfWork.GetRepository<User>().AnyAsync(e => e.Email == viewModel.Email);
         if (isRepatedEmail)
         {
-            return new FailureResponseViewModel<int>(ErrorCode.UserEmailExist);
-        }
-
-        var isRepatedPhone = await _unitOfWork.GetRepository<User>().AnyAsync(e => e.Phone == viewModel.Phone);
-        if (isRepatedPhone)
-        {
-            return new FailureResponseViewModel<int>(ErrorCode.UserPhoneExist);
+            return new FailureResponseViewModel<AuthModel>(ErrorCode.UserEmailExist);
         }
 
         var user = viewModel.Map<User>();
@@ -94,65 +89,43 @@ public class authenticationService : IauthenticationService
         var isSaved = await _unitOfWork.SaveChangesAsync() > 0;
         if (isSaved)
         {
-            return new SuccessResponseViewModel<int>(SuccessCode.UserCreated);
+            var UserRole = user.Role;
+
+            var jwtSecurityToken = CreateJwtToken(user, UserRole);
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
+            authModel.IsAuthenticated = true;
+            authModel.Email = user.Email;
+
+            return new SuccessResponseViewModel<AuthModel>(SuccessCode.LoginCorrectly, authModel);
         }
-        return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+        return new FailureResponseViewModel<AuthModel>(ErrorCode.DataBaseError);
 
     }
 
-
-    public async Task<ResponseViewModel<int>> CreateAdmin(AdminCreateViewModel viewModel)
+    public async Task<ResponseViewModel<AuthModel>> LoginAsync(LoginViewModel loginViewModel)
     {
-        var isRepatedUserName = await _unitOfWork.GetRepository<Person>().AnyAsync(e => e.Username == viewModel.Username);
-        if (isRepatedUserName)
-        {
-            return new FailureResponseViewModel<int>(ErrorCode.UserNameExist);
-        }
-
-        var isRepatedEmail = await _unitOfWork.GetRepository<Person>().AnyAsync(e => e.Email == viewModel.Email);
-        if (isRepatedEmail)
-        {
-            return new FailureResponseViewModel<int>(ErrorCode.UserEmailExist);
-        }
-
-        var admin = viewModel.Map<Admin>();
-        admin.Password = PasswordHasherService.HashPassord(admin.Password);
-        admin.Role = Role.Admin;
-
-        await _unitOfWork.GetRepository<Admin>().AddAsync(admin);
-        var isSaved = await _unitOfWork.SaveChangesAsync() > 0;
-        if (isSaved)
-        {
-            return new SuccessResponseViewModel<int>(SuccessCode.AdminCreated);
-        }
-        return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
-
-    }
-
-    public async Task<ResponseViewModel<AuthModel>> Login(LoginViewModel loginViewModel)
-    {
-        Person? person;
         var authModel = new AuthModel();
 
 
-        person = await _unitOfWork.GetRepository<Admin>().GetAll(e => e.Email == loginViewModel.Email).FirstOrDefaultAsync();
+      var  user = await _unitOfWork.GetRepository<User>().GetAll(e => e.Email == loginViewModel.Email).FirstOrDefaultAsync();
 
-        if (person == null)
+        if (user == null)
         {
             return new FailureResponseViewModel<AuthModel>(ErrorCode.UserNotFound);
 
         }
 
-        var correctPassword = PasswordHasherService.ValidatePassword(loginViewModel.Password, person.Password);
+        var correctPassword = PasswordHasherService.ValidatePassword(loginViewModel.Password, user.Password);
         if (correctPassword)
         {
-            var personRole = person.Role;
+            var userRole = user.Role;
 
-            var jwtSecurityToken = await CreateJwtToken(person, personRole);
+            var jwtSecurityToken = CreateJwtToken(user, userRole);
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.IsAuthenticated = true;
-            authModel.Email = person.Email;
+            authModel.Email = user.Email;
 
             return new SuccessResponseViewModel<AuthModel>(SuccessCode.LoginCorrectly, authModel);
 
@@ -160,16 +133,16 @@ public class authenticationService : IauthenticationService
         return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
     }
 
-    public async Task<JwtSecurityToken> CreateJwtToken(Person person, Role role)
+    private JwtSecurityToken CreateJwtToken(User User, Role role)
     {
 
         var roleClaims = new List<Claim>();
 
         var claims = new[]
         {
-               new Claim(JwtRegisteredClaimNames.GivenName,$"{ person.Username} "),
+               new Claim(JwtRegisteredClaimNames.GivenName,$"{ User.Username} "),
                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-               new Claim(ClaimTypes.NameIdentifier,$"{ person.Id} "),
+               new Claim(ClaimTypes.NameIdentifier,$"{ User.Id} "),
                new Claim(ClaimTypes.Role, ((int)role).ToString()),
 
 

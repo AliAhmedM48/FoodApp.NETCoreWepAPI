@@ -19,14 +19,5 @@ public static class DataSeeder
         }
     }
 
-    public static async Task SeedAdmins(AppDbContext appDbContext)
-    {
-        if (!appDbContext.Admins.Any())
-        {
-            var admin = new Admin { Username = "aliahmed", Email = "aliahmed@gmail.com", Password = "aliahmed!@#111", Role = Role.Admin, CreatedAt = DateTime.Now, CreatedBy = 0 };
 
-            await appDbContext.Admins.AddAsync(admin);
-            await appDbContext.SaveChangesAsync();
-        }
-    }
 }

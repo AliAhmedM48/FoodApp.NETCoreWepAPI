@@ -1,11 +1,10 @@
-﻿using Food.App.Core.Enums;
-using Food.App.Core.ViewModels;
+﻿using Food.App.Core.ViewModels;
 using Food.App.Core.ViewModels.Authentication;
 using Food.App.Core.ViewModels.Response;
 using Food.App.Core.ViewModels.Users;
 
 namespace Food.App.Core.Interfaces.Services;
-public interface IauthenticationService
+public interface IAuthenticationService
 {
     ResponseViewModel<IEnumerable<UserViewModel>> GetAllUsers();
     ResponseViewModel<UserDetailsViewModel> GetUserDetailsById(int id);
@@ -13,9 +12,8 @@ public interface IauthenticationService
     //TODO: Implement method GetAllFavoriteRecipesByUserId
     //IEnumerable<RecipeViewModel> GetAllFavoriteRecipesByUserId(int id);
 
-    Task<ResponseViewModel<int>> CreateUser(UserCreateViewModel viewModel);
-    Task<ResponseViewModel<int>> CreateAdmin(AdminCreateViewModel viewModel);
-    Task<ResponseViewModel<AuthModel>> Login(LoginViewModel loginViewModel);
+    Task<ResponseViewModel<AuthModel>> RegisterAsync(UserCreateViewModel viewModel);
+    Task<ResponseViewModel<AuthModel>> LoginAsync(LoginViewModel loginViewModel);
 
 
 }

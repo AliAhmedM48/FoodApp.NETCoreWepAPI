@@ -1,7 +1,8 @@
 ﻿namespace Food.App.Core.Enums;
 
-public enum Feature
+public enum Role
 {
-    GetRecipes = 0,
-    GetSingleRecipe = 1,
+    None = 0,
+    User = 1,
+    Admin = 2
 }

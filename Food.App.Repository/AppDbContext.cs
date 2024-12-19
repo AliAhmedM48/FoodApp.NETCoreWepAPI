@@ -6,11 +6,9 @@ namespace Food.App.Repository;
 
 public class AppDbContext : DbContext
 {
-    public DbSet<Person> Person { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<RoleFeature> RoleFeatures { get; set; }
 
-    public DbSet<Admin> Admins { get; set; }
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Tag> Tags { get; set; }
@@ -27,7 +25,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Person>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.UseTptMappingStrategy();
 

@@ -56,7 +56,6 @@ namespace Food.App.API
                 var appDbContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>();
                 await appDbContext.Database.MigrateAsync();
 
-                await DataSeeder.SeedAdmins(appDbContext);
                 await DataSeeder.SeedUsers(appDbContext);
                 #endregion
 
