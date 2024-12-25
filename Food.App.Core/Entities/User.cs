@@ -1,4 +1,5 @@
 ﻿using Food.App.Core.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Food.App.Core.Entities;
 
@@ -10,4 +11,8 @@ public class User : BaseEntity
     public Role Role { get; set; }
     public string Country { get; set; }
     public string Phone { get; set; }
+    public DateTime PasswordResetCodeExpiration { get; set; }
+    [StringLength(6)]
+    public string? PasswordResetCode { get; set; }
+
 }

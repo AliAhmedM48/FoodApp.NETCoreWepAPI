@@ -20,14 +20,15 @@ namespace Food.App.Service;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
 
     private readonly JWT _jwt;
 
-    public AuthenticationService(IUnitOfWork unitOfWork, IOptions<JWT> jwt)
+    public AuthenticationService(IUnitOfWork unitOfWork, IOptions<JWT> jwt, IEmailService emailService)
     {
         _unitOfWork = unitOfWork;
         _jwt = jwt.Value;
-
+        _emailService = emailService;
     }
     public async Task<ResponseViewModel<bool>> DeleteUserByIdAsync(int id)
     {
@@ -154,10 +155,12 @@ public class AuthenticationService : IAuthenticationService
             var doesPassCorrect = PasswordHasherService.ValidatePassword(viewModel.OldPassword, getUser!.Password);
             if (doesPassCorrect)
             {
+                var newPass = PasswordHasherService.HashPassord(viewModel.NewPassword);
+
                 var user = new User
                 {
                     Id = getUser.Id,
-                    Password = viewModel.NewPassword,
+                    Password = newPass,
                 };
 
                 _unitOfWork.GetRepository<User>().SaveInclude(user, a => a.Password);
@@ -173,6 +176,65 @@ public class AuthenticationService : IAuthenticationService
         }
         return new FailureResponseViewModel<AuthModel>(ErrorCode.DataBaseError);
 
+    }
+    public async Task<ResponseViewModel<int>> ForgetPassword(string email)
+    {
+        var userExists = await _unitOfWork.GetRepository<User>().AnyAsync(x => x.Email == email);
+        if (userExists)
+        {
+            var getUser = await _unitOfWork.GetRepository<User>()
+                                                .AsQuerable()
+                                                .Where(a => a.Email == email)
+                                                .FirstOrDefaultAsync();
+
+            var resetCode = new Random().Next(100000, 999999).ToString();
+
+            var user = new User
+            {
+                Id = getUser.Id,
+                PasswordResetCode = resetCode,
+                PasswordResetCodeExpiration = DateTime.UtcNow.AddMinutes(1),
+            };
+
+            _unitOfWork.GetRepository<User>().SaveInclude(user, a => a.PasswordResetCode, a => a.PasswordResetCodeExpiration);
+            var result = await _unitOfWork.SaveChangesAsync() > 0;
+
+
+            await _emailService.SendEmailAsync(user.Email, "Password Reset Code",
+         $"Your password reset code is: {resetCode}. This code is valid for 1 minute.");
+            var response = new SuccessResponseViewModel<int>(SuccessCode.ChangePasswordUpdated);
+
+            response.CustomMessage = "Your password has been reset successfully please review your email ";
+            return response;
+
+        }
+        return new FailureResponseViewModel<int>(ErrorCode.DataBaseError);
+
+    }
+    public async Task<ResponseViewModel<AuthModel>> VerifyResetCode(VerifyCodeViewModel model)
+    {
+        var getUser = await _unitOfWork.GetRepository<User>().AnyAsync(x => x.Email == model.Email);
+
+        var resetRequest = await _unitOfWork.GetRepository<User>().AsQuerable()
+                                                              .FirstOrDefaultAsync(x => x.Email == model.Email &&
+                                                              x.PasswordResetCode == model.Code &&
+                                                              x.PasswordResetCodeExpiration > DateTime.UtcNow);
+
+        if (resetRequest == null)
+        {
+            return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
+        }
+        var newPass = PasswordHasherService.HashPassord(model.Password);
+
+        var user = new User
+        {
+            Id = resetRequest.Id,
+            Password = newPass,
+        };
+
+        _unitOfWork.GetRepository<User>().SaveInclude(user, a => a.Password);
+        var result = await _unitOfWork.SaveChangesAsync() > 0;
+        return result ? new SuccessResponseViewModel<AuthModel>(SuccessCode.ChangePasswordUpdated) : new FailureResponseViewModel<AuthModel>(ErrorCode.DataBaseError);
     }
     private JwtSecurityToken CreateJwtToken(User User, Role role)
     {
