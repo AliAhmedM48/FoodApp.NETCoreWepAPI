@@ -132,7 +132,48 @@ public class AuthenticationService : IAuthenticationService
         }
         return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
     }
+    public async Task<ResponseViewModel<AuthModel>> ResetPassword(ResetPasswordViewModel viewModel)
+    {
+        if (viewModel.NewPassword != viewModel.ConfirmPassword)
+        {
+            return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
+        }
+        if (viewModel.NewPassword.Length > 6)
+        {
+            return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
 
+        }
+        var userExists = await _unitOfWork.GetRepository<User>().AnyAsync(x => x.Email == viewModel.Email);
+        if (userExists)
+        {
+            var getUser = await _unitOfWork.GetRepository<User>()
+                                                .AsQuerable()
+                                                .Where(a => a.Email == viewModel.Email)
+                                                .FirstOrDefaultAsync();
+
+            var doesPassCorrect = PasswordHasherService.ValidatePassword(viewModel.OldPassword, getUser!.Password);
+            if (doesPassCorrect)
+            {
+                var user = new User
+                {
+                    Id = getUser.Id,
+                    Password = viewModel.NewPassword,
+                };
+
+                _unitOfWork.GetRepository<User>().SaveInclude(user, a => a.Password);
+                var result = await _unitOfWork.SaveChangesAsync() > 0;
+                return result ? new SuccessResponseViewModel<AuthModel>(SuccessCode.ChangePasswordUpdated) : new FailureResponseViewModel<AuthModel>(ErrorCode.DataBaseError);
+
+            }
+            else
+            {
+                return new FailureResponseViewModel<AuthModel>(ErrorCode.IncorrectPassword);
+
+            }
+        }
+        return new FailureResponseViewModel<AuthModel>(ErrorCode.DataBaseError);
+
+    }
     private JwtSecurityToken CreateJwtToken(User User, Role role)
     {
 

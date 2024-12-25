@@ -3,7 +3,9 @@ using Food.App.Core.ViewModels;
 using Food.App.Core.ViewModels.Authentication;
 using Food.App.Core.ViewModels.Response;
 using Food.App.Core.ViewModels.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Food.App.API.Controllers
 {
@@ -61,7 +63,23 @@ namespace Food.App.API.Controllers
             }
             return Ok(responseViewModel);
         }
+        [HttpPut("reset-password"), Authorize]
+        public async Task<ActionResult<ResponseViewModel<bool>>> ResetPassword([FromBody] ResetPasswordViewModel viewModel)
+        {
+            var userEmail = User.FindFirst(ClaimTypes.Email).Value;
+            if (string.IsNullOrWhiteSpace(userEmail))
+            {
+                return BadRequest();
 
+            }
+            viewModel.Email = userEmail;
+            var responseViewModel = await _authenticationService.ResetPassword(viewModel);
+            if (!responseViewModel.IsSuccess)
+            {
+                return NotFound(responseViewModel);
+            }
+            return Ok(responseViewModel);
+        }
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResponseViewModel<bool>>> DeleteUser([FromRoute] int id)
         {

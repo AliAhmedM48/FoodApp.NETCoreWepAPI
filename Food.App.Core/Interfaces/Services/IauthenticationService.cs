@@ -14,6 +14,6 @@ public interface IAuthenticationService
 
     Task<ResponseViewModel<AuthModel>> RegisterAsync(UserCreateViewModel viewModel);
     Task<ResponseViewModel<AuthModel>> LoginAsync(LoginViewModel loginViewModel);
-
-
+    Task<ResponseViewModel<AuthModel>> ResetPassword(ResetPasswordViewModel viewModel);
 }
+
