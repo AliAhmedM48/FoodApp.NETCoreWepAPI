@@ -201,7 +201,7 @@ public class AuthenticationService : IAuthenticationService
 
 
             await _emailService.SendEmailAsync(user.Email, "Password Reset Code",
-         $"Your password reset code is: {resetCode}. This code is valid for 1 minute.");
+                                                                 $"Your password reset code is: {resetCode}. This code is valid for 1 minute.");
             var response = new SuccessResponseViewModel<int>(SuccessCode.ChangePasswordUpdated);
 
             response.CustomMessage = "Your password has been reset successfully please review your email ";

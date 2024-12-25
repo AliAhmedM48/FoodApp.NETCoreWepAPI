@@ -80,6 +80,28 @@ namespace Food.App.API.Controllers
             }
             return Ok(responseViewModel);
         }
+        [HttpPut("forget-password")]
+        public async Task<ActionResult<ResponseViewModel<bool>>> ForgetPassowrd(string email)
+        {
+
+            var responseViewModel = await _authenticationService.ForgetPassword(email);
+            if (!responseViewModel.IsSuccess)
+            {
+                return NotFound(responseViewModel);
+            }
+            return Ok(responseViewModel);
+        }
+        [HttpPut("verify-code")]
+        public async Task<ActionResult<ResponseViewModel<bool>>> VerifyResetCode(VerifyCodeViewModel model)
+        {
+
+            var responseViewModel = await _authenticationService.VerifyResetCode(model);
+            if (!responseViewModel.IsSuccess)
+            {
+                return NotFound(responseViewModel);
+            }
+            return Ok(responseViewModel);
+        }
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResponseViewModel<bool>>> DeleteUser([FromRoute] int id)
         {
